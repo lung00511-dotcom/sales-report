@@ -1,97 +1,475 @@
-<!DOCTYPE html><html lang="zh-HK"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>銷售報數平台</title><style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f3f4f6; color: #1f2937; }
-.navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.navbar h1 { font-size: 1.4rem; font-weight: 700; }
-.navbar-user { display: flex; gap: 1.5rem; align-items: center; font-size: 0.9rem; }
-.logout-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; }
-.logout-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-1px); }
-.container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
-#login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1rem; }
-.login-box { background: white; padding: 3rem; border-radius: 12px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-.login-box h2 { font-size: 2.2rem; color: #3b82f6; margin-bottom: 0.5rem; }
-.login-box p { color: #6b7280; margin-bottom: 2rem; font-size: 1rem; }
-.login-input, select { width: 100%; padding: 0.95rem; margin-bottom: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: 0.2s; }
-.login-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.2); }
-.login-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: 0.2s; }
-.login-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-.login-hints { margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e5e7eb; font-size: 0.85rem; color: #6b7280; text-align: left; line-height: 1.8; }
-.table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
-.table th, .table td { border: 1px solid #d1d5db; padding: 0.5rem; text-align: left; }
-.table th { background-color: #e5e7eb; }
-.form-group { margin-bottom: 1rem; }
-input[type="number"] { width: 100%; padding: 0.5rem; }
-.submit-btn { background: #10b981; color: white; border: none; padding: 0.7rem 1rem; border-radius: 6px; cursor: pointer; }
-.submit-btn:hover { background: #059669; }
-</style></head><body><!-- LOGIN SCREEN --><div id="login-screen"><div class="login-box"><h2>📊 銷售報數平台</h2><p>Sales Reporting System v2.0</p><input type="text" id="user-name" class="login-input" placeholder="輸入名字" autocomplete="off" /><select id="user-role" class="login-input" onchange="toggleAdminPass()"><option value="">選擇身份</option><option value="staff">同事 (報數)</option><option value="admin">管理員 (查看統計)</option></select><div id="admin-pass-div" style="display: none;"><input type="password" id="admin-pass" class="login-input" placeholder="輸入管理員密碼" autocomplete="off" /></div><button class="login-btn" onclick="handleLogin()">🔓 登入</button><div class="login-hints"><p><strong>👥 同事登入</strong></p><p style="margin-bottom: 1rem;">例如: Sarah / Becky / Tom / 隨便取名</p><p><strong>🔐 管理員登入</strong></p><p>需要密碼（已隱藏）</p></div></div></div><!-- STAFF SCREEN --><div id="staff-screen" style="display:none;"><div class="navbar"><h1>📋 同事報數表單</h1><div class="navbar-user"><span id="staff-name">同事: -</span><span id="staff-date">日期: -</span><button class="logout-btn" onclick="logout()">🚪 登出</button></div></div><div class="container"><h2>🛍 Gadgets 參考資料</h2><table class="table"><tr><th>Item</th><th>Pain Point</th><th>Brand Value</th><th>原價</th></tr><tr><td>水機</td><td>解決飲水不便</td><td>健康生活</td><td>$500</td></tr><tr><td>無線充</td><td>線材雜亂</td><td>方便快捷</td><td>$300</td></tr><tr><td>耳機</td><td>聽歌自由</td><td>高音質</td><td>$800</td></tr><tr><td>USB 手指</td><td>儲存不足</td><td>可靠耐用</td><td>$150</td></tr><tr><td>行動電源</td><td>手機冇電</td><td>持久耐用</td><td>$200</td></tr><tr><td>風扇</td><td>天氣炎熱</td><td>涼爽舒適</td><td>$250</td></tr><tr><td>藍牙喇叭</td><td>音樂共享</td><td>便攜時尚</td><td>$400</td></tr></table><h2>📥 每日報數</h2><form id="report-form"><div class="form-group"><label>CIS (Order數)</label><input type="number" id="cis" min="0" value="0"></div><div class="form-group"><label>VAS (增值服務數)</label><input type="number" id="vas" min="0" value="0"></div><h3>Gadgets 數</h3><div class="form-group"><label>水機</label><input type="number" id="g-water" min="0" value="0"></div><div class="form-group"><label>無線充</label><input type="number" id="g-wireless" min="0" value="0"></div><div class="form-group"><label>耳機</label><input type="number" id="g-earphone" min="0" value="0"></div><div class="form-group"><label>USB 手指</label><input type="number" id="g-usb" min="0" value="0"></div><div class="form-group"><label>行動電源</label><input type="number" id="g-powerbank" min="0" value="0"></div><div class="form-group"><label>風扇</label><input type="number" id="g-fan" min="0" value="0"></div><div class="form-group"><label>藍牙喇叭</label><input type="number" id="g-speaker" min="0" value="0"></div><h3>Ad-Hoc 數</h3><div class="form-group"><label>PCD NEW</label><input type="number" id="a-pcd" min="0" value="0"></div><div class="form-group"><label>2500M</label><input type="number" id="a-2500" min="0" value="0"></div><div class="form-group"><label>Router</label><input type="number" id="a-router" min="0" value="0"></div><button type="button" class="submit-btn" onclick="submitReport()">提交報數</button></form></div></div><!-- ADMIN SCREEN --><div id="admin-screen" style="display:none;"><div class="navbar"><h1>📊 管理員統計頁面</h1><div class="navbar-user"><span id="admin-name">管理員: -</span><button class="logout-btn" onclick="logout()">🚪 登出</button></div></div><div class="container"><h2>📜 報數紀錄</h2><table class="table" id="admin-table"><tr><th>同事</th><th>日期</th><th>CIS</th><th>VAS</th><th>水機</th><th>無線充</th><th>耳機</th><th>USB</th><th>行動電源</th><th>風扇</th><th>藍牙喇叭</th><th>PCD NEW</th><th>2500M</th><th>Router</th></tr></table></div></div><script>
-let reports = [];
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>銷售報數平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f3f4f6; color: #1f2937; }
+        .navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .navbar h1 { font-size: 1.4rem; font-weight: 700; }
+        .navbar-user { display: flex; gap: 1.5rem; align-items: center; font-size: 0.9rem; }
+        .logout-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .logout-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-1px); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+        
+        #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1rem; }
+        .login-box { background: white; padding: 3rem; border-radius: 12px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .login-box h2 { font-size: 2.2rem; color: #3b82f6; margin-bottom: 0.5rem; }
+        .login-box p { color: #6b7280; margin-bottom: 2rem; font-size: 1rem; }
+        .login-input { width: 100%; padding: 0.95rem; margin-bottom: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: 0.2s; }
+        .login-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.2); }
+        .login-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: 0.2s; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .login-hints { margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e5e7eb; font-size: 0.85rem; color: #6b7280; text-align: left; line-height: 1.8; }
+        
+        #staff-screen, #admin-screen { display: none; }
+        
+        .form-card { background: white; padding: 2.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .form-card h2 { font-size: 1.3rem; color: #3b82f4; margin-bottom: 1.5rem; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input, .form-group textarea { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; font-size: 0.95rem; transition: 0.2s; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #3b82f6; box-shadow: inset 0 0 4px rgba(59, 130, 246, 0.1); }
+        
+        .gadgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .gadget-btn { padding: 1rem; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; text-align: center; font-weight: 600; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; }
+        .gadget-btn:hover { border-color: #3b82f4; background: #eff6ff; transform: translateY(-2px); }
+        .gadget-btn.active { background: #3b82f4; color: white; border-color: #1e40af; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .gadget-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .gadget-name { font-size: 0.8rem; line-height: 1.3; }
+        
+        .gadget-detail { display: none; background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #3b82f4; margin-bottom: 1.5rem; }
+        .gadget-detail.active { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .detail-header { display: flex; gap: 1.5rem; }
+        .detail-image { width: 120px; height: 120px; background: white; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .detail-image img { max-width: 100%; max-height: 100%; object-fit: cover; }
+        .detail-content h3 { color: #3b82f4; font-size: 1.1rem; margin-bottom: 0.8rem; }
+        .detail-content p { font-size: 0.9rem; color: #374151; margin-bottom: 0.6rem; line-height: 1.6; }
+        .detail-content strong { color: #1e40af; }
+        
+        .qty-input { display: none; margin-bottom: 1.5rem; }
+        .qty-input .form-group input { width: 100%; }
+        
+        .submit-btn { width: 100%; padding: 1.1rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: 0.2s; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .submit-btn:active { transform: translateY(0); }
+        
+        .success-alert { display: none; padding: 1rem; background: #d1fae5; color: #065f46; border-radius: 8px; margin-top: 1rem; text-align: center; font-weight: 600; border: 2px solid #6ee7b7; animation: slideDown 0.3s ease; }
+        .success-alert.show { display: block; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-box { background: white; padding: 1.5rem; border-radius: 8px; border-top: 4px solid #3b82f4; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .stat-label { font-size: 0.8rem; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-bottom: 0.8rem; }
+        .stat-value { font-size: 2.4rem; font-weight: 700; color: #3b82f4; }
+        
+        .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .table-header { background: #f3f4f6; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; }
+        .table-header h3 { font-size: 1.1rem; color: #3b82f4; }
+        .export-btn { padding: 0.8rem 1.5rem; background: #3b82f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .export-btn:hover { background: #1e40af; transform: translateY(-1px); }
+        
+        table { width: 100%; border-collapse: collapse; }
+        table th { background: #f9fafb; padding: 1rem 1.5rem; text-align: left; font-weight: 600; border-bottom: 2px solid #e5e7eb; font-size: 0.9rem; }
+        table td { padding: 0.9rem 1.5rem; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
+        table tbody tr:hover { background: #f9fafb; }
+        
+        .no-data { text-align: center; padding: 3rem; color: #9ca3af; }
+        
+        @media (max-width: 768px) {
+            .gadgets-grid { grid-template-columns: repeat(2, 1fr); }
+            .navbar { padding: 0.8rem 1rem; }
+            .navbar h1 { font-size: 1.1rem; }
+            .detail-header { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+    <div class="login-box">
+        <h2>📊 銷售報數平台</h2>
+        <p>Sales Reporting System</p>
+        <input type="text" id="user-name" class="login-input" placeholder="輸入名字" autocomplete="off" />
+        <select id="user-role" class="login-input" onchange="toggleAdminPass()">
+            <option value="">選擇身份</option>
+            <option value="staff">同事 (報數)</option>
+            <option value="admin">管理員 (查看統計)</option>
+        </select>
+        <div id="admin-pass-div" style="display: none;">
+            <input type="password" id="admin-pass" class="login-input" placeholder="輸入管理員密碼" autocomplete="off" />
+        </div>
+        <button class="login-btn" onclick="handleLogin()">🔓 登入</button>
+        <div class="login-hints">
+            <p><strong>👥 同事登入</strong></p>
+            <p style="margin-bottom: 1rem;">例如: Sarah / Becky / Tom</p>
+            <p><strong>🔐 管理員登入</strong></p>
+            <p>需要密碼（已隱藏）</p>
+        </div>
+    </div>
+</div>
+
+<!-- STAFF SCREEN -->
+<div id="staff-screen">
+    <div class="navbar">
+        <h1>📋 同事報數表單</h1>
+        <div class="navbar-user">
+            <span id="staff-name">同事: -</span>
+            <span id="staff-date">日期: -</span>
+            <button class="logout-btn" onclick="logout()">🚪 登出</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="form-card">
+            <h2>📝 填寫今日銷售數據</h2>
+            <form id="staff-form" onsubmit="submitStaffReport(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📱 CIS 訂單數</label>
+                        <input type="number" id="cis" min="0" value="0" required />
+                    </div>
+                    <div class="form-group">
+                        <label>➕ VAS 增值服務</label>
+                        <input type="number" id="vas" min="0" value="0" required />
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #3b82f4; font-size: 1.1rem;">🎁 禮品銷售 (點擊查看詳情)</h3>
+                <div class="gadgets-grid" id="gadgets-grid"></div>
+                
+                <div id="gadget-detail" class="gadget-detail">
+                    <div class="detail-header">
+                        <div class="detail-image">
+                            <img id="detail-image" src="" alt="產品圖片" />
+                        </div>
+                        <div class="detail-content">
+                            <h3 id="detail-name"></h3>
+                            <p><strong>型號:</strong> <span id="detail-model"></span></p>
+                            <p><strong>😤 痛點:</strong> <span id="detail-pain"></span></p>
+                            <p><strong>💰 SRP 原價:</strong> <span id="detail-srp"></span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="qty-input">
+                    <div class="form-group">
+                        <label id="qty-label">數量</label>
+                        <input type="number" id="gadget-qty" min="1" value="1" required />
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #3b82f4; font-size: 1.1rem;">📱 Ad-Hoc VAS</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>2500M</label>
+                        <input type="number" id="adhoc1" min="0" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Router</label>
+                        <input type="number" id="adhoc2" min="0" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>PCD NEW</label>
+                        <input type="number" id="adhoc3" min="0" value="0" />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📌 備註 (選填)</label>
+                    <textarea id="notes" style="min-height: 100px; resize: vertical;"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn" style="margin-top: 1.5rem;">✅ 提交報數</button>
+            </form>
+            <div id="success-msg" class="success-alert">✅ 報數已成功保存！資料會即時更新到管理員儀表板。</div>
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div id="admin-screen">
+    <div class="navbar">
+        <h1>📊 管理員儀表板</h1>
+        <button class="logout-btn" onclick="logout()">🚪 登出</button>
+    </div>
+    <div class="container">
+        <div class="stats-grid" id="stats-grid"></div>
+        
+        <div class="table-card">
+            <div class="table-header">
+                <h3>📈 即時銷售統計表</h3>
+                <button class="export-btn" onclick="exportToCSV()">📥 匯出 Excel (CSV)</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="report-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th><th>同事名稱</th><th>CIS</th><th>VAS</th><th>2500M</th><th>Router</th><th>PCD NEW</th><th>禮品銷售</th><th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            <div id="no-data-msg" class="no-data">暫無報數數據</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "admin2024";
+
+const GADGETS = [
+    { 
+        id: 0, emoji: "🔥", name: "i-GS1 掛燙機", model: "i-GS1", 
+        pain: "衫皺得好嘆，成日要去乾洗店", 
+        srp: "$798", 
+        image: "https://via.placeholder.com/120?text=i-GS1+掛燙機" 
+    },
+    { 
+        id: 1, emoji: "💨", name: "i-FD8 風筒", model: "i-FD8", 
+        pain: "頭髮濕漉漉，吹都吹唔乾", 
+        srp: "$599", 
+        image: "https://via.placeholder.com/120?text=i-FD8+風筒" 
+    },
+    { 
+        id: 2, emoji: "🏠", name: "SV-8178 吸塵機", model: "SV-8178", 
+        pain: "地板成日有灰塵、毛髮", 
+        srp: "$1,299", 
+        image: "https://via.placeholder.com/120?text=SV-8178+吸塵機" 
+    },
+    { 
+        id: 3, emoji: "💧", name: "i-WD25 飲水機", model: "i-WD25", 
+        pain: "成日要燒水，等得耐", 
+        srp: "$2,499", 
+        image: "https://via.placeholder.com/120?text=i-WD25+飲水機" 
+    },
+    { 
+        id: 4, emoji: "⭐", name: "i-WD25 套裝", model: "i-WD25 Bundle", 
+        pain: "想要全套解決方案", 
+        srp: "$3,288", 
+        image: "https://via.placeholder.com/120?text=i-WD25+套裝" 
+    },
+    { 
+        id: 5, emoji: "🔊", name: "Jelly Fish 喇叭", model: "Jelly Fish", 
+        pain: "聽音樂音質差，無便攜", 
+        srp: "$249", 
+        image: "https://via.placeholder.com/120?text=Jelly+Fish+喇叭" 
+    },
+    { 
+        id: 6, emoji: "🔋", name: "i-3C5M2 充電寶", model: "i-3C5M2", 
+        pain: "手機成日無電", 
+        srp: "$399", 
+        image: "https://via.placeholder.com/120?text=i-3C5M2+充電寶" 
+    }
+];
+
+let currentUser = null;
+let selectedGadget = null;
+let reports = JSON.parse(localStorage.getItem('sales_reports')) || [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeGadgets();
+});
+
+function initializeGadgets() {
+    const grid = document.getElementById('gadgets-grid');
+    grid.innerHTML = '';
+    GADGETS.forEach(gadget => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'gadget-btn';
+        btn.innerHTML = `<div class="gadget-emoji">${gadget.emoji}</div><div class="gadget-name">${gadget.name}</div>`;
+        btn.onclick = () => selectGadget(gadget);
+        grid.appendChild(btn);
+    });
+}
 
 function toggleAdminPass() {
-  const role = document.getElementById("user-role").value;
-  document.getElementById("admin-pass-div").style.display = (role === "admin") ? "block" : "none";
+    const role = document.getElementById('user-role').value;
+    document.getElementById('admin-pass-div').style.display = role === 'admin' ? 'block' : 'none';
+}
+
+function selectGadget(gadget) {
+    selectedGadget = gadget;
+    document.querySelectorAll('.gadget-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', GADGETS[idx].id === gadget.id);
+    });
+    document.getElementById('detail-image').src = gadget.image;
+    document.getElementById('detail-name').textContent = gadget.name;
+    document.getElementById('detail-model').textContent = gadget.model;
+    document.getElementById('detail-pain').textContent = gadget.pain;
+    document.getElementById('detail-srp').textContent = gadget.srp;
+    document.getElementById('gadget-detail').classList.add('active');
+    document.querySelector('.qty-input').style.display = 'block';
+    document.getElementById('qty-label').textContent = `${gadget.name} 銷售數量`;
 }
 
 function handleLogin() {
-  const name = document.getElementById("user-name").value.trim();
-  const role = document.getElementById("user-role").value;
-  const adminPass = document.getElementById("admin-pass").value;
-
-  if (!name) { alert("請輸入名字"); return; }
-  if (!role) { alert("請選擇身份"); return; }
-
-  if (role === "admin") {
-    if (adminPass !== "1234") { alert("管理員密碼錯誤"); return; }
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("admin-screen").style.display = "block";
-    document.getElementById("admin-name").textContent = "管理員: " + name;
-    renderAdminTable();
-  } else {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("staff-screen").style.display = "block";
-    document.getElementById("staff-name").textContent = "同事: " + name;
-    document.getElementById("staff-date").textContent = "日期: " + new Date().toLocaleDateString();
-  }
-}
-
-function submitReport() {
-  const report = {
-    name: document.getElementById("staff-name").textContent.replace("同事: ", ""),
-    date: new Date().toLocaleDateString(),
-    cis: +document.getElementById("cis").value,
-    vas: +document.getElementById("vas").value,
-    gWater: +document.getElementById("g-water").value,
-    gWireless: +document.getElementById("g-wireless").value,
-    gEarphone: +document.getElementById("g-earphone").value,
-    gUsb: +document.getElementById("g-usb").value,
-    gPowerbank: +document.getElementById("g-powerbank").value,
-    gFan: +document.getElementById("g-fan").value,
-    gSpeaker: +document.getElementById("g-speaker").value,
-    aPcd: +document.getElementById("a-pcd").value,
-    a2500: +document.getElementById("a-2500").value,
-    aRouter: +document.getElementById("a-router").value
-  };
-
-  reports.push(report);
-  alert("報數已提交！");
-  document.getElementById("report-form").reset();
-}
-
-function renderAdminTable() {
-  const table = document.getElementById("admin-table");
-  table.innerHTML = `<tr><th>同事</th><th>日期</th><th>CIS</th><th>VAS</th><th>水機</th><th>無線充</th><th>耳機</th><th>USB</th><th>行動電源</th><th>風扇</th><th>藍牙喇叭</th><th>PCD NEW</th><th>2500M</th><th>Router</th></tr>`;
-  reports.forEach(r => {
-    table.innerHTML += `<tr><td>${r.name}</td><td>${r.date}</td><td>${r.cis}</td><td>${r.vas}</td><td>${r.gWater}</td><td>${r.gWireless}</td><td>${r.gEarphone}</td><td>${r.gUsb}</td><td>${r.gPowerbank}</td><td>${r.gFan}</td><td>${r.gSpeaker}</td><td>${r.aPcd}</td><td>${r.a2500}</td><td>${r.aRouter}</td></tr>`;
-  });
+    const name = document.getElementById('user-name').value.trim();
+    const role = document.getElementById('user-role').value;
+    const pass = document.getElementById('admin-pass').value;
+    
+    if (!name || !role) {
+        alert('❌ 請輸入名字並選擇身份');
+        return;
+    }
+    
+    if (role === 'admin' && pass !== ADMIN_PASSWORD) {
+        alert('❌ 密碼錯誤');
+        return;
+    }
+    
+    currentUser = { name, role };
+    document.getElementById('login-screen').style.display = 'none';
+    
+    if (role === 'staff') {
+        document.getElementById('staff-screen').style.display = 'block';
+        document.getElementById('staff-name').textContent = `同事: ${name}`;
+        const now = new Date();
+        document.getElementById('staff-date').textContent = `日期: ${now.toLocaleDateString('zh-HK')}`;
+    } else {
+        document.getElementById('admin-screen').style.display = 'block';
+        refreshAdminView();
+    }
 }
 
 function logout() {
-  document.getElementById("staff-screen").style.display = "none";
-  document.getElementById("admin-screen").style.display = "none";
-  document.getElementById("login-screen").style.display = "flex";
-  document.getElementById("user-name").value = "";
-  document.getElementById("user-role").value = "";
-  document.getElementById("admin-pass").value = "";
-  document.getElementById("admin-pass-div").style.display = "none";
+    currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('staff-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'none';
+    selectedGadget = null;
+    document.getElementById('user-name').value = '';
+    document.getElementById('user-role').value = '';
+    document.getElementById('admin-pass').value = '';
 }
-</script></body></html>
 
+function submitStaffReport(e) {
+    e.preventDefault();
+    
+    const cis = parseInt(document.getElementById('cis').value) || 0;
+    const vas = parseInt(document.getElementById('vas').value) || 0;
+    const adhoc1 = parseInt(document.getElementById('adhoc1').value) || 0;
+    const adhoc2 = parseInt(document.getElementById('adhoc2').value) || 0;
+    const adhoc3 = parseInt(document.getElementById('adhoc3').value) || 0;
+    const notes = document.getElementById('notes').value.trim();
+    
+    const gadgetName = selectedGadget ? 
+        `${selectedGadget.name} (x${document.getElementById('gadget-qty').value})` : 
+        '無';
+    
+    const now = new Date();
+    const report = {
+        date: now.toISOString().split('T')[0],
+        staff: currentUser.name,
+        cis, vas, adhoc1, adhoc2, adhoc3,
+        gadget: gadgetName,
+        notes
+    };
+    
+    reports.push(report);
+    localStorage.setItem('sales_reports', JSON.stringify(reports));
+    
+    const msg = document.getElementById('success-msg');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 3000);
+    
+    document.getElementById('staff-form').reset();
+    document.querySelectorAll('.gadget-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('gadget-detail').classList.remove('active');
+    document.querySelector('.qty-input').style.display = 'none';
+    selectedGadget = null;
+}
+
+function refreshAdminView() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayData = reports.filter(r => r.date === today);
+    
+    let cis = 0, vas = 0, adhoc = 0;
+    todayData.forEach(r => {
+        cis += r.cis;
+        vas += r.vas;
+        adhoc += r.adhoc1 + r.adhoc2 + r.adhoc3;
+    });
+    
+    document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-box">
+            <div class="stat-label">今日 CIS</div>
+            <div class="stat-value">${cis}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">今日 VAS</div>
+            <div class="stat-value" style="color: #10b981;">${vas}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Ad-Hoc VAS</div>
+            <div class="stat-value" style="color: #ef4444;">${adhoc}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">報數次數</div>
+            <div class="stat-value" style="color: #8b5cf6;">${todayData.length}</div>
+        </div>
+    `;
+    
+    const tbody = document.getElementById('table-body');
+    const noDataMsg = document.getElementById('no-data-msg');
+    
+    tbody.innerHTML = '';
+    
+    if (reports.length === 0) {
+        noDataMsg.style.display = 'block';
+        return;
+    }
+    
+    noDataMsg.style.display = 'none';
+    
+    reports.slice().reverse().forEach(r => {
+        tbody.innerHTML += `<tr>
+            <td>${r.date}</td>
+            <td><strong>${r.staff}</strong></td>
+            <td>${r.cis}</td>
+            <td>${r.vas}</td>
+            <td>${r.adhoc1}</td>
+            <td>${r.adhoc2}</td>
+            <td>${r.adhoc3}</td>
+            <td>${r.gadget}</td>
+            <td>${r.notes || '-'}</td>
+        </tr>`;
+    });
+}
+
+function exportToCSV() {
+    if (reports.length === 0) {
+        alert('❌ 沒有數據可匯出');
+        return;
+    }
+    
+    let csv = '日期,同事名稱,CIS,VAS,2500M,Router,PCD NEW,禮品銷售,備註\n';
+    
+    reports.forEach(r => {
+        const escapedNotes = `"${(r.notes || '').replace(/"/g, '""')}"`;
+        const escapedGadget = `"${r.gadget.replace(/"/g, '""')}"`;
+        csv += `${r.date},${r.staff},${r.cis},${r.vas},${r.adhoc1},${r.adhoc2},${r.adhoc3},${escapedGadget},${escapedNotes}\n`;
+    });
+    
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+}
+
+setInterval(() => {
+    if (currentUser && currentUser.role === 'admin') {
+        refreshAdminView();
+    }
+}, 2000);
+</script>
+
+</body>
+</html>
