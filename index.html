@@ -32,35 +32,37 @@
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
         .form-group input, .form-group textarea { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; font-size: 0.95rem; transition: 0.2s; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #3b82f6; box-shadow: inset 0 0 4px rgba(59, 130, 246, 0.1); }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #3b82f4; box-shadow: inset 0 0 4px rgba(59, 130, 246, 0.1); }
         
-        .gadgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .gadget-btn { padding: 1rem; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; text-align: center; font-weight: 600; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; }
-        .gadget-btn:hover { border-color: #3b82f4; background: #eff6ff; transform: translateY(-2px); }
-        .gadget-btn.active { background: #3b82f4; color: white; border-color: #1e40af; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-        .gadget-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .gadget-name { font-size: 0.8rem; line-height: 1.3; }
+        .gadgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
+        .gadget-card { padding: 1.2rem; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; text-align: center; font-weight: 600; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
+        .gadget-card:hover { border-color: #3b82f4; background: #eff6ff; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); }
+        .gadget-card.active { background: #3b82f4; color: white; border-color: #1e40af; box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3); }
+        .gadget-img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; }
+        .gadget-card.active .gadget-img { border: 2px solid white; }
+        .gadget-label { font-size: 0.85rem; line-height: 1.3; }
         
-        .gadget-detail { display: none; background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #3b82f4; margin-bottom: 1.5rem; }
+        .gadget-detail { display: none; background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); padding: 2rem; border-radius: 8px; border-left: 4px solid #3b82f4; margin-bottom: 1.5rem; }
         .gadget-detail.active { display: block; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .detail-header { display: flex; gap: 1.5rem; }
-        .detail-image { width: 120px; height: 120px; background: white; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .detail-image img { max-width: 100%; max-height: 100%; object-fit: cover; }
-        .detail-content h3 { color: #3b82f4; font-size: 1.1rem; margin-bottom: 0.8rem; }
-        .detail-content p { font-size: 0.9rem; color: #374151; margin-bottom: 0.6rem; line-height: 1.6; }
-        .detail-content strong { color: #1e40af; }
+        .detail-header { display: flex; gap: 2rem; }
+        .detail-image { min-width: 140px; }
+        .detail-image img { width: 140px; height: 140px; object-fit: cover; border-radius: 8px; background: white; padding: 8px; }
+        .detail-content h3 { color: #3b82f4; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; }
+        .detail-content .brand-section { background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border-left: 3px solid #ef4444; }
+        .brand-name { color: #ef4444; font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
+        .brand-desc { font-size: 0.9rem; color: #374151; line-height: 1.5; }
+        .detail-content p { font-size: 0.95rem; color: #374151; margin-bottom: 0.8rem; line-height: 1.6; }
+        .detail-content strong { color: #1e40af; font-weight: 700; }
         
         .qty-input { display: none; margin-bottom: 1.5rem; }
         .qty-input .form-group input { width: 100%; }
         
         .submit-btn { width: 100%; padding: 1.1rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: 0.2s; }
         .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .submit-btn:active { transform: translateY(0); }
         
-        .success-alert { display: none; padding: 1rem; background: #d1fae5; color: #065f46; border-radius: 8px; margin-top: 1rem; text-align: center; font-weight: 600; border: 2px solid #6ee7b7; animation: slideDown 0.3s ease; }
+        .success-alert { display: none; padding: 1rem; background: #d1fae5; color: #065f46; border-radius: 8px; margin-top: 1rem; text-align: center; font-weight: 600; border: 2px solid #6ee7b7; }
         .success-alert.show { display: block; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-box { background: white; padding: 1.5rem; border-radius: 8px; border-top: 4px solid #3b82f4; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -83,7 +85,6 @@
         @media (max-width: 768px) {
             .gadgets-grid { grid-template-columns: repeat(2, 1fr); }
             .navbar { padding: 0.8rem 1rem; }
-            .navbar h1 { font-size: 1.1rem; }
             .detail-header { flex-direction: column; align-items: center; }
         }
     </style>
@@ -94,7 +95,7 @@
 <div id="login-screen">
     <div class="login-box">
         <h2>📊 銷售報數平台</h2>
-        <p>Sales Reporting System</p>
+        <p>Gadget Installment Offer</p>
         <input type="text" id="user-name" class="login-input" placeholder="輸入名字" autocomplete="off" />
         <select id="user-role" class="login-input" onchange="toggleAdminPass()">
             <option value="">選擇身份</option>
@@ -109,7 +110,7 @@
             <p><strong>👥 同事登入</strong></p>
             <p style="margin-bottom: 1rem;">例如: Sarah / Becky / Tom</p>
             <p><strong>🔐 管理員登入</strong></p>
-            <p>需要密碼（已隱藏）</p>
+            <p>密碼: admin2024</p>
         </div>
     </div>
 </div>
@@ -139,7 +140,7 @@
                     </div>
                 </div>
                 
-                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #3b82f4; font-size: 1.1rem;">🎁 禮品銷售 (點擊查看詳情)</h3>
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #3b82f4; font-size: 1.1rem;">🎁 禮品銷售 (點擊選擇)</h3>
                 <div class="gadgets-grid" id="gadgets-grid"></div>
                 
                 <div id="gadget-detail" class="gadget-detail">
@@ -147,11 +148,16 @@
                         <div class="detail-image">
                             <img id="detail-image" src="" alt="產品圖片" />
                         </div>
-                        <div class="detail-content">
+                        <div class="detail-content" style="flex: 1;">
                             <h3 id="detail-name"></h3>
+                            <div class="brand-section">
+                                <div class="brand-name" id="detail-brand"></div>
+                                <div class="brand-desc" id="detail-brand-desc"></div>
+                            </div>
                             <p><strong>型號:</strong> <span id="detail-model"></span></p>
-                            <p><strong>😤 痛點:</strong> <span id="detail-pain"></span></p>
-                            <p><strong>💰 SRP 原價:</strong> <span id="detail-srp"></span></p>
+                            <p><strong>💰 SRP 原價:</strong> <span id="detail-srp" style="color: #ef4444; font-size: 1.1rem;"></span></p>
+                            <p><strong>😤 痛點解決:</strong></p>
+                            <p style="margin-left: 1rem; color: #4b5563;"><span id="detail-pain"></span></p>
                         </div>
                     </div>
                 </div>
@@ -225,46 +231,74 @@ const ADMIN_PASSWORD = "admin2024";
 
 const GADGETS = [
     { 
-        id: 0, emoji: "🔥", name: "i-GS1 掛燙機", model: "i-GS1", 
-        pain: "衫皺得好嘆，成日要去乾洗店", 
-        srp: "$798", 
-        image: "https://via.placeholder.com/120?text=i-GS1+掛燙機" 
+        id: 0, 
+        name: "掛燙金球電壓手持掛燙機", 
+        brand: "inno3C", 
+        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器，提供高質素居家解決方案",
+        model: "i-GS1", 
+        pain: "衣服經常皺皺的，每次都要去乾洗店處理，費時費錢。現在可以在家自己快速整平，一分鐘就搞掂，再唔洗排隊去乾洗店。", 
+        srp: "$598", 
+        image: "https://via.placeholder.com/140/FF6B6B/FFFFFF?text=i-GS1+掛燙機"
     },
     { 
-        id: 1, emoji: "💨", name: "i-FD8 風筒", model: "i-FD8", 
-        pain: "頭髮濕漉漉，吹都吹唔乾", 
-        srp: "$599", 
-        image: "https://via.placeholder.com/120?text=i-FD8+風筒" 
+        id: 1, 
+        name: "摺疊負離子高速風筒", 
+        brand: "inno3C", 
+        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器，提供高質素居家解決方案",
+        model: "i-FD8", 
+        pain: "每次洗完頭髮都濕漉漉的，吹都吹唔乾，費時又傷頭髮。i-FD8 採用離子技術，護髮同時速乾，減少毛躁，頭髮更靚。", 
+        srp: "$698", 
+        image: "https://via.placeholder.com/140/4ECDC4/FFFFFF?text=i-FD8+風筒"
     },
     { 
-        id: 2, emoji: "🏠", name: "SV-8178 吸塵機", model: "SV-8178", 
-        pain: "地板成日有灰塵、毛髮", 
-        srp: "$1,299", 
-        image: "https://via.placeholder.com/120?text=SV-8178+吸塵機" 
+        id: 2, 
+        name: "智能無線HEPA旋風吸塵機", 
+        brand: "Smartech", 
+        brandDesc: "Smartech - 香港本地智能家電品牌，專注無線清潔科技，打造潔淨智慧生活",
+        model: "SV-8178", 
+        pain: "地板經常有灰塵同寵物毛髮，傳統吸塵機又重又煩，要牽條尾。SV-8178 無線設計，靈活方便，輕鬆清潔每個角落，家企變得乾淨衛生。", 
+        srp: "$1,498", 
+        image: "https://via.placeholder.com/140/95E1D3/FFFFFF?text=SV-8178+吸塵機"
     },
     { 
-        id: 3, emoji: "💧", name: "i-WD25 飲水機", model: "i-WD25", 
-        pain: "成日要燒水，等得耐", 
-        srp: "$2,499", 
-        image: "https://via.placeholder.com/120?text=i-WD25+飲水機" 
+        id: 3, 
+        name: "即熱UV-C超濾飲水機", 
+        brand: "inno3C", 
+        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器，提供高質素居家解決方案",
+        model: "i-WD25", 
+        pain: "每日要燒水等到腳腫，又擔心自來水質量。i-WD25 有UV-C殺菌同超濾系統，即開即飲，5秒就有熱水，安全又方便。", 
+        srp: "$2,998", 
+        image: "https://via.placeholder.com/140/F38181/FFFFFF?text=i-WD25+飲水機"
     },
     { 
-        id: 4, emoji: "⭐", name: "i-WD25 套裝", model: "i-WD25 Bundle", 
-        pain: "想要全套解決方案", 
-        srp: "$3,288", 
-        image: "https://via.placeholder.com/120?text=i-WD25+套裝" 
+        id: 4, 
+        name: "即熱飲水機 + 超濾濾芯套裝", 
+        brand: "inno3C", 
+        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器，提供高質素居家解決方案",
+        model: "i-WD25 Bundle", 
+        pain: "想一次過解決飲水問題，又唔想日後煩住換濾芯。呢個套裝包括飲水機同備用濾芯，一次購買，可以用足一年無煩惱。", 
+        srp: "$3,596", 
+        image: "https://via.placeholder.com/140/AA96DA/FFFFFF?text=i-WD25+Bundle"
     },
     { 
-        id: 5, emoji: "🔊", name: "Jelly Fish 喇叭", model: "Jelly Fish", 
-        pain: "聽音樂音質差，無便攜", 
-        srp: "$249", 
-        image: "https://via.placeholder.com/120?text=Jelly+Fish+喇叭" 
+        id: 5, 
+        name: "Jelly Fish 藍牙喇叭", 
+        brand: "Jelly Fish", 
+        brandDesc: "Jelly Fish - 新興音樂科技品牌，以獨特設計融合高質音效，提供便攜式音樂體驗",
+        model: "Bluetooth Speaker", 
+        pain: "聽歌音質差，又要成日carry喇叭去唔同地方。Jelly Fish 設計輕巧便攜，防水設計，去海邊、郊外都唔怕，高音質享受隨時隨地。", 
+        srp: "$368", 
+        image: "https://via.placeholder.com/140/FFE66D/FFFFFF?text=Jelly+Fish"
     },
     { 
-        id: 6, emoji: "🔋", name: "i-3C5M2 充電寶", model: "i-3C5M2", 
-        pain: "手機成日無電", 
-        srp: "$399", 
-        image: "https://via.placeholder.com/120?text=i-3C5M2+充電寶" 
+        id: 6, 
+        name: "M0 OLED QI2 超薄磁吸無線充電寶", 
+        brand: "inno3C", 
+        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器，提供高質素居家解決方案",
+        model: "i-3C5M2", 
+        pain: "手機成日無電，尤其喺出門時好煩，USB線又麻煩。i-3C5M2 超薄設計，磁吸吸住手機就充，無線無線無煩惱，5000mAh 夠你用。", 
+        srp: "$368", 
+        image: "https://via.placeholder.com/140/A8E6CF/FFFFFF?text=i-3C5M2+充電寶"
     }
 ];
 
@@ -280,12 +314,17 @@ function initializeGadgets() {
     const grid = document.getElementById('gadgets-grid');
     grid.innerHTML = '';
     GADGETS.forEach(gadget => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'gadget-btn';
-        btn.innerHTML = `<div class="gadget-emoji">${gadget.emoji}</div><div class="gadget-name">${gadget.name}</div>`;
-        btn.onclick = () => selectGadget(gadget);
-        grid.appendChild(btn);
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'gadget-card';
+        card.innerHTML = `
+            <img src="${gadget.image}" alt="${gadget.name}" class="gadget-img" />
+            <div class="gadget-label">
+                <strong>${gadget.brand}</strong><br>${gadget.model}
+            </div>
+        `;
+        card.onclick = () => selectGadget(gadget);
+        grid.appendChild(card);
     });
 }
 
@@ -296,11 +335,13 @@ function toggleAdminPass() {
 
 function selectGadget(gadget) {
     selectedGadget = gadget;
-    document.querySelectorAll('.gadget-btn').forEach((btn, idx) => {
-        btn.classList.toggle('active', GADGETS[idx].id === gadget.id);
+    document.querySelectorAll('.gadget-card').forEach((card, idx) => {
+        card.classList.toggle('active', GADGETS[idx].id === gadget.id);
     });
     document.getElementById('detail-image').src = gadget.image;
     document.getElementById('detail-name').textContent = gadget.name;
+    document.getElementById('detail-brand').textContent = gadget.brand;
+    document.getElementById('detail-brand-desc').textContent = gadget.brandDesc;
     document.getElementById('detail-model').textContent = gadget.model;
     document.getElementById('detail-pain').textContent = gadget.pain;
     document.getElementById('detail-srp').textContent = gadget.srp;
@@ -360,7 +401,7 @@ function submitStaffReport(e) {
     const notes = document.getElementById('notes').value.trim();
     
     const gadgetName = selectedGadget ? 
-        `${selectedGadget.name} (x${document.getElementById('gadget-qty').value})` : 
+        `${selectedGadget.brand} ${selectedGadget.model} (x${document.getElementById('gadget-qty').value})` : 
         '無';
     
     const now = new Date();
@@ -380,7 +421,7 @@ function submitStaffReport(e) {
     setTimeout(() => msg.classList.remove('show'), 3000);
     
     document.getElementById('staff-form').reset();
-    document.querySelectorAll('.gadget-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.gadget-card').forEach(b => b.classList.remove('active'));
     document.getElementById('gadget-detail').classList.remove('active');
     document.querySelector('.qty-input').style.display = 'none';
     selectedGadget = null;
