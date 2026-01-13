@@ -3,738 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銷售報數平台</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>銷售禮品展示平台 - Gadget Showcase</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f3f4f6; color: #1f2937; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f8 100%); color: #1f2937; }
         
-        .navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; }
-        .navbar h1 { font-size: 1.4rem; font-weight: bold; }
-        .navbar-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        .logout-btn, .sync-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-        .sync-btn { background: rgba(100,255,100,0.3); }
-        .sync-btn:hover { background: rgba(100,255,100,0.5); }
-        .sync-status { color: white; font-size: 0.9rem; padding: 0.5rem 1rem; }
+        .navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .navbar h1 { font-size: 1.8rem; font-weight: bold; }
+        .navbar-subtitle { font-size: 0.85rem; opacity: 0.9; margin-top: 0.3rem; }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 3rem 2rem; }
         
-        #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1rem; }
-        .login-box { background: white; padding: 3rem; border-radius: 12px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-        .login-box h2 { font-size: 2.2rem; color: #3b82f4; margin-bottom: 1rem; }
-        .login-input { width: 100%; padding: 0.95rem; margin-bottom: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; }
-        .login-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f4 0%, #1e40af 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .header-section { text-align: center; margin-bottom: 3rem; }
+        .header-section h2 { font-size: 2.5rem; color: #1e40af; margin-bottom: 1rem; font-weight: bold; }
+        .header-section p { font-size: 1.1rem; color: #6b7280; }
         
-        #staff-screen, #admin-screen { display: none; }
+        .gadgets-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
         
-        .form-card { background: white; padding: 2.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .form-card h2 { font-size: 1.3rem; color: #3b82f4; margin-bottom: 1.5rem; }
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-weight: bold; margin-bottom: 0.5rem; }
-        .form-group input, .form-group textarea, .form-group select { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; }
+        .gadget-card-showcase { 
+            background: white; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .gadget-card-showcase:hover { 
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+        }
         
-        .gadgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
-        .gadget-card { padding: 1rem; background: white; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
-        .gadget-card:hover { border-color: #3b82f4; background: #eff6ff; }
-        .gadget-card.selected { background: #3b82f4; color: white; border-color: #1e40af; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        .gadget-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .gadget-text { font-size: 0.75rem; line-height: 1.2; }
-        .gadget-qty { font-size: 0.7rem; background: rgba(0,0,0,0.1); padding: 0.3rem 0.6rem; border-radius: 4px; margin-top: 0.5rem; }
+        .card-image { 
+            width: 100%; 
+            height: 280px; 
+            background: linear-gradient(135deg, #f0f4f8 0%, #e0e7f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .card-image img { 
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+        }
         
-        .gadget-detail { display: none; background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #3b82f4; }
-        .gadget-detail.active { display: block; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .card-content { padding: 1.5rem; }
+        .card-brand { color: #ef4444; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .card-model { font-size: 1.2rem; font-weight: bold; color: #1f2937; margin: 0.5rem 0; }
+        .card-description { color: #6b7280; font-size: 0.9rem; line-height: 1.5; margin: 1rem 0; }
+        .card-srp { color: #059669; font-weight: bold; font-size: 1.3rem; margin: 1rem 0; }
+        .card-specs { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .spec-badge { 
+            background: #eff6ff; 
+            color: #0284c7; 
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .card-btn { 
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #3b82f4 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: opacity 0.2s;
+        }
+        .card-btn:hover { opacity: 0.9; }
         
-        .detail-header { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
-        .detail-emoji { font-size: 4rem; min-width: 80px; }
-        .detail-info h3 { color: #3b82f4; font-size: 1.2rem; margin-bottom: 0.3rem; font-weight: bold; }
-        .detail-brand { color: #ef4444; font-weight: bold; margin-bottom: 0.5rem; }
-        .spec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; background: white; padding: 1rem; border-radius: 6px; }
-        .spec-item { border-left: 3px solid #3b82f4; padding-left: 0.8rem; }
-        .spec-label { font-weight: bold; color: #3b82f4; font-size: 0.9rem; }
+        /* Detail Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+        .modal.active { display: flex; }
+        .modal-content { 
+            background: white; 
+            border-radius: 16px; 
+            max-width: 900px; 
+            width: 100%; 
+            max-height: 90vh; 
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        .close-btn { 
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .close-btn:hover { color: #1f2937; }
+        
+        .modal-header { 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+        .modal-image { 
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        .modal-image img { 
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .modal-info h2 { color: #3b82f4; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .modal-brand { color: #ef4444; font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .modal-srp { color: #059669; font-weight: bold; font-size: 1.3rem; margin: 1rem 0; }
+        .modal-desc { color: #6b7280; line-height: 1.6; margin: 1rem 0; }
+        
+        .spec-section { background: #eff6ff; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #3b82f4; }
+        .spec-section h3 { color: #1e40af; margin-bottom: 1rem; font-size: 1.1rem; }
+        .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .spec-item { }
+        .spec-label { font-weight: bold; color: #1e40af; font-size: 0.9rem; }
         .spec-value { color: #374151; font-size: 0.95rem; margin-top: 0.2rem; }
         
-        .pain-points { background: white; padding: 1rem; border-radius: 6px; margin-top: 1rem; }
-        .pain-points h4 { color: #1e40af; margin-bottom: 0.8rem; }
-        .pain-point-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.8rem; }
-        .pain-point-row:last-child { border-bottom: none; }
-        .pain-point-left { background: #fef2f2; padding: 0.8rem; border-radius: 4px; }
-        .pain-point-right { background: #f0fdf4; padding: 0.8rem; border-radius: 4px; }
-        .pain-title { font-weight: bold; color: #ef4444; margin-bottom: 0.3rem; font-size: 0.9rem; }
-        .solution-title { font-weight: bold; color: #10b981; margin-bottom: 0.3rem; font-size: 0.9rem; }
-        .pain-text, .solution-text { font-size: 0.9rem; line-height: 1.5; }
+        .pain-section { background: white; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border: 2px solid #e5e7eb; }
+        .pain-section h3 { color: #1e40af; margin-bottom: 1rem; font-size: 1.1rem; }
+        .pain-point { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .pain-left { background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 3px solid #ef4444; }
+        .pain-right { background: #f0fdf4; padding: 1rem; border-radius: 6px; border-left: 3px solid #10b981; }
+        .pain-title { font-weight: bold; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .pain-text { font-size: 0.9rem; line-height: 1.5; color: #374151; }
         
-        .qty-input { background: white; padding: 1.2rem; border-radius: 8px; border-left: 3px solid #10b981; margin-bottom: 1rem; }
-        .qty-input label { font-weight: bold; color: #10b981; margin-bottom: 0.5rem; }
-        .qty-input input { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; }
-        .add-gadget-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .add-gadget-btn:hover { opacity: 0.9; }
+        .cert-section { background: #e0f2fe; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #0284c7; }
+        .cert-section h3 { color: #0c4a6e; margin-bottom: 1rem; font-size: 1.1rem; }
+        .cert-item { color: #0c4a6e; margin: 0.5rem 0; font-size: 0.95rem; }
         
-        .selected-gadgets { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .selected-gadgets h3 { color: #3b82f4; margin-bottom: 1rem; font-size: 1.1rem; }
-        .gadget-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f9fafb; border-radius: 6px; margin-bottom: 0.8rem; border-left: 3px solid #3b82f4; }
-        .gadget-item-info { flex: 1; }
-        .gadget-item-name { font-weight: bold; color: #1f2937; }
-        .gadget-item-qty { color: #6b7280; font-size: 0.9rem; }
-        .remove-btn { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .remove-btn:hover { opacity: 0.9; }
+        .script-section { background: #fff3cd; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #ffc107; }
+        .script-section h3 { color: #856404; margin-bottom: 1rem; font-size: 1.1rem; }
+        .script-text { color: #856404; line-height: 1.6; font-size: 0.95rem; }
         
-        .submit-btn { width: 100%; padding: 1.1rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 1.5rem; }
-        .success-alert { display: none; padding: 1rem; background: #d1fae5; color: #065f46; border-radius: 8px; margin-top: 1rem; text-align: center; font-weight: bold; }
-        .success-alert.show { display: block; }
+        .footer { 
+            text-align: center; 
+            padding: 2rem; 
+            background: linear-gradient(135deg, #3b82f4 0%, #1e40af 100%);
+            color: white;
+            border-radius: 12px;
+            margin-top: 3rem;
+        }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-box { background: white; padding: 1.5rem; border-radius: 8px; border-top: 4px solid #3b82f4; text-align: center; }
-        .stat-value { font-size: 2.4rem; font-weight: bold; color: #3b82f4; }
-        
-        .table-card { background: white; border-radius: 8px; overflow: hidden; }
-        .table-header { background: #f3f4f6; padding: 1rem 1.5rem; display: flex; justify-content: space-between; }
-        .export-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .export-btn { padding: 0.8rem 1rem; background: #3b82f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        table th { background: #f9fafb; padding: 1rem; text-align: left; font-weight: bold; border-bottom: 2px solid #e5e7eb; font-size: 0.9rem; }
-        table td { padding: 0.9rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .gadgets-showcase { grid-template-columns: 1fr; }
+            .modal-header { grid-template-columns: 1fr; }
+            .spec-grid { grid-template-columns: 1fr; }
+            .pain-point { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="login-screen">
-    <div class="login-box">
-        <h2>📊 銷售報數平台</h2>
-        <p>Gadget Installment Offer</p>
-        <input type="text" id="user-name" class="login-input" placeholder="輸入名字" />
-        <select id="user-role" class="login-input">
-            <option value="">選擇身份</option>
-            <option value="staff">同事 (報數)</option>
-            <option value="admin">管理員 (查看統計)</option>
-        </select>
-        <div id="admin-pass-section" style="display: none;">
-            <input type="password" id="admin-pass" class="login-input" placeholder="輸入密碼" />
-        </div>
-        <button class="login-btn" onclick="handleLogin()">🔓 登入</button>
+<div class="navbar">
+    <div>
+        <h1>🎁 禮品銷售展示平台</h1>
+        <p class="navbar-subtitle">Gadget Installment Offer - 專業銷售工具</p>
     </div>
 </div>
 
-<!-- STAFF SCREEN -->
-<div id="staff-screen">
-    <div class="navbar">
-        <h1>📋 同事報數表單</h1>
-        <div class="navbar-actions">
-            <div>
-                <span id="staff-name">同事: -</span> | 
-                <span id="staff-date">日期: -</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">🚪 登出</button>
-        </div>
+<div class="container">
+    <div class="header-section">
+        <h2>7款優質禮品 • 升級你的銷售方案</h2>
+        <p>點擊任何產品卡查看詳細資訊、銷售技巧 & 客戶痛點分析</p>
     </div>
-    <div class="container">
-        <div class="form-card">
-            <h2>📝 填寫今日銷售數據</h2>
-            <form onsubmit="submitStaffReport(event)">
-                <h3 style="margin-bottom: 1rem; color: #3b82f4;">🎁 禮品銷售 (點擊查看詳情 + 選擇數量)</h3>
-                <div class="gadgets-grid" id="gadgets-grid"></div>
-                
-                <div id="gadget-detail" class="gadget-detail">
-                    <div class="detail-header">
-                        <div class="detail-emoji" id="detail-emoji">📦</div>
-                        <div class="detail-info" style="flex: 1;">
-                            <h3 id="detail-name"></h3>
-                            <div class="detail-brand" id="detail-brand"></div>
-                            <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 1rem;" id="detail-brand-desc"></p>
-                            <p><strong>🔧 型號:</strong> <span id="detail-model"></span></p>
-                            <p><strong>💰 SRP 原價:</strong> <span id="detail-srp" style="color: #ef4444; font-size: 1.1rem;"></span></p>
-                        </div>
-                    </div>
-                    
-                    <div class="spec-grid" id="spec-grid"></div>
-                    
-                    <div class="pain-points">
-                        <h4>💡 真實顧客 Pain Point & 解決方案</h4>
-                        <div id="pain-points-content"></div>
-                    </div>
-                    
-                    <div class="qty-input">
-                        <label for="current-qty" id="qty-label">輸入銷售數量</label>
-                        <input type="number" id="current-qty" min="0" value="0" />
-                        <button type="button" class="add-gadget-btn" onclick="addGadgetToList()" style="margin-top: 0.8rem; width: 100%;">➕ 加入清單</button>
-                    </div>
-                </div>
-                
-                <!-- 已選擇禮品清單 -->
-                <div id="selected-list" class="selected-gadgets" style="display: none;">
-                    <h3>✅ 已選擇禮品</h3>
-                    <div id="gadgets-list"></div>
-                </div>
-                
-                <h3 style="margin-top: 2rem; color: #3b82f4;">📊 銷售數據</h3>
-                <div class="form-row">
-                    <div class="form-group"><label>📱 CIS 訂單數</label><input type="number" id="cis" min="0" value="0" /></div>
-                    <div class="form-group"><label>➕ VAS 增值服務</label><input type="number" id="vas" min="0" value="0" /></div>
-                </div>
-                
-                <h3 style="color: #3b82f4;">👔 團隊資訊</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Leader</label>
-                        <select id="leader" required>
-                            <option value="">選擇 Leader</option>
-                            <option value="Nelson Wong">Nelson Wong</option>
-                            <option value="Billy Lam">Billy Lam</option>
-                            <option value="Timothy Chan">Timothy Chan</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <h3 style="color: #3b82f4;">📱 Ad-Hoc VAS</h3>
-                <div class="form-row">
-                    <div class="form-group"><label>2500M</label><input type="number" id="adhoc1" min="0" value="0" /></div>
-                    <div class="form-group"><label>Router</label><input type="number" id="adhoc2" min="0" value="0" /></div>
-                    <div class="form-group"><label>PCD NEW</label><input type="number" id="adhoc3" min="0" value="0" /></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>📌 備註 (選填)</label>
-                    <textarea id="notes" style="min-height: 80px;"></textarea>
-                </div>
-                
-                <button type="submit" class="submit-btn">✅ 提交報數</button>
-            </form>
-            <div id="success-msg" class="success-alert">✅ 報數已成功保存！</div>
-        </div>
+    
+    <div class="gadgets-showcase" id="showcase"></div>
+    
+    <div class="footer">
+        <h3>🚀 準備好升級您的銷售計劃？</h3>
+        <p>點擊上面任何產品卡以查看完整詳情及銷售建議</p>
     </div>
 </div>
 
-<!-- ADMIN SCREEN -->
-<div id="admin-screen">
-    <div class="navbar">
-        <h1>📊 管理員儀表板</h1>
-        <div class="navbar-actions">
-            <div class="sync-status" id="sync-status"></div>
-            <button class="sync-btn" onclick="syncToGoogleSheets()">☁️ 同步到 Google Sheets</button>
-            <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
-            <button class="logout-btn" onclick="logout()">🚪 登出</button>
-        </div>
-    </div>
-    <div class="container">
-        <div class="stats-grid" id="stats-grid"></div>
+<!-- Detail Modal -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
         
-        <div class="table-card">
-            <div class="table-header">
-                <h3>📈 銷售統計表</h3>
+        <div class="modal-header">
+            <div class="modal-image" id="modalImage"></div>
+            <div class="modal-info">
+                <div class="modal-brand" id="modalBrand"></div>
+                <h2 id="modalName"></h2>
+                <p style="color: #6b7280; margin-bottom: 1rem;"><strong>型號:</strong> <span id="modalModel"></span></p>
+                <div class="modal-srp" id="modalSRP"></div>
+                <p class="modal-desc" id="modalDesc"></p>
             </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>日期</th><th>同事</th><th>Leader</th><th>CIS</th><th>VAS</th><th>2500M</th><th>Router</th><th>PCD NEW</th><th>禮品銷售</th><th>備註</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-            <div id="no-data-msg" style="text-align: center; padding: 3rem; color: #999;">暫無數據</div>
         </div>
+        
+        <div class="spec-section" id="specSection"></div>
+        <div class="cert-section" id="certSection" style="display: none;"></div>
+        <div class="script-section" id="scriptSection"></div>
+        <div class="pain-section" id="painSection"></div>
     </div>
 </div>
 
 <script>
-const ADMIN_PASSWORD = "admin2024";
-// ⚠️ 改成你嘅 Google Sheets API 資訊
-const GOOGLE_SHEET_ID = "1i4BQoxepAJYA_LtLcc-vsClhoVWwPmfA6coU-SNaGw8";
-const GOOGLE_API_KEY = "AIzaSyAoaREbhHFto0z4RoJaylmnJi06sOEj8A4";
-
 const GADGETS = [
     {
         id: 0,
-        emoji: "🔥",
         name: "掛燙金球電壓手持掛燙機",
         brand: "inno3C",
         model: "i-GS1",
-        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器",
-        srp: "$598",
+        brandDesc: "inno3C - 創新3C科技品牌，香港設計研製",
+        srp: "$598 (原價 $798，節省 $200)",
+        description: "30秒快速預熱，一噴即平。特別適合忙碌上班族。",
+        image: "image:282",
         specs: {
-            "掛燙溫度": "70-85°C 恆溫",
+            "掛燙溫度": "70-85°C 精確恆溫控制",
             "加熱時間": "30秒快速預熱",
-            "容水量": "80ml（可持續15分鐘）",
-            "線長": "1.5m",
-            "重量": "280g 輕過部手機",
-            "功率": "800W",
-            "保修": "2年"
+            "容水量": "80ml（可持續15分鐘不間斷噴氣）",
+            "線長": "1.5m 長度足夠",
+            "重量": "280g 輕於半部手機",
+            "功率": "800W 節能設計",
+            "全球電壓": "110-240V 出差旅遊必備",
+            "保修": "香港原廠 12個月自攜保養"
         },
+        certifications: null,
+        salesScript: "陳生，你知香港天氣潮濕，衫放屋企成日皺曬？特別係出門前趕時間，件衫皺到唔能出門，頭大啦。今日我想同你介紹呢件掛燙機，30秒即熱，一噴即平，連出差旅遊都能帶行李箱度，外國返香港見老細，件衫永遠平平靚靚。不如同你升級左你既服務計劃之餘，拎埋呢件掛燙機走啦！",
         painPoints: [
-            { pain: "出門趕時間，衫皺到不能出門", solution: "30秒即熱 + 一噴即平，冇時間洗衫都得" },
-            { pain: "傳統掛燙機好重好大，阻位", solution: "282g 細細隻，放屋企邊隻角都得" },
-            { pain: "高溫會傷衣料，燙到變殘", solution: "恆溫設計，棉、麻、真絲都適用" },
-            { pain: "經常要乾洗店，一次成蚊幾百蚊", solution: "買一次用足3年，年底已回本" }
+            { pain: "傳統熨斗易卡住衫料，高溫燙到變殘", solution: "直向橫向自由切換，恆溫設計，棉麻絲都啱用 ✅" },
+            { pain: "返工趕時間，整衫都要半小時", solution: "30秒即熱 + 一噴即平，3分鐘搞掂 ⚡" },
+            { pain: "掛燙機好重好大，放屋企好攞位", solution: "280g 細細隻，背包都放到，旅遊首選 🎒" },
+            { pain: "用傳統方法乾洗每次成蚊幾百蚊", solution: "買一部用足3年，年底已經回本 💰" }
         ]
     },
     {
         id: 1,
-        emoji: "💨",
         name: "摺疊負離子高速風筒",
         brand: "inno3C",
         model: "i-FD8",
-        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器",
-        srp: "$698",
+        brandDesc: "inno3C - 創新3C科技品牌，亞洲領先",
+        srp: "$498 (原價 $698，節省 $200)",
+        description: "1400W超強馬達，3分鐘快速乾髮。摺疊後A5大小。",
+        image: "image:286",
         specs: {
-            "功率": "1800W 高效馬達",
-            "風速": "最高 65m/s 強檔",
+            "功率": "1400W 強勁馬達 (同級最強)",
+            "馬達轉速": "高達 100,000 rpm 專業級別",
+            "風速": "最高 65m/s 強檔風力",
             "乾髮時間": "濕髮→半乾 只需3分鐘",
-            "負離子濃度": "3百萬 負離子/cm³（護髮級別）",
-            "溫度檔": "3檔溫度 + 冷風定型",
+            "負離子濃度": "300萬負離子/cm³ (護髮級別)",
+            "溫度檔": "4檔溫度 (100°C/80°C/60°C/28°C冷風定型)",
             "重量": "420g 輕如羽毛",
-            "摺疊尺寸": "A5 紙大小（12x8x6cm）"
+            "摺疊尺寸": "A5 紙大小 (12x8x6cm)"
         },
+        certifications: null,
+        salesScript: "李小姐，我自己都有試過，傳統吹風機幾百蚊一部，用到一段時間就開始熱到好似爆谷咁膨脹，噴出好鼻嗅嘅味道。同埋長期高溫真係會傷頭皮同頭髮。我地呢隻有1400W強勁馬達，配合負離子護髮科技，3分鐘幫你快速乾身，又唔會傷頭皮。最緊係摺疊後得A5大小，返工帶住都得。與其每次去salon被人吹得頭皮痛，不如帶埋呢隻高速風筒走，冷風定型用法仲靚！不如同你升級左你既服務計劃之餘，拎埋呢隻風筒走啦！",
         painPoints: [
-            { pain: "冬天濕髮會感冒，夏天吹到一身汗", solution: "3分鐘快速乾身，冬暖夏爽" },
-            { pain: "傳統風筒吹唔乾，頭髮毛躁打結", solution: "1800W 強勁 + 負離子鎖水，吹完比沙龍仲靚" },
-            { pain: "風筒好重好熱，舉到手酸", solution: "420g 輕如羽毛，冷風循環唔會燒手" },
-            { pain: "出差/去宿舍，行李已經滿", solution: "摺疊後A5大小，放背包都冇問題" }
+            { pain: "傳統風筒高溫吹到頭皮痛、頭髮毛躁分岔", solution: "負離子護髮 + 精確溫度控制，比salon仲靚 ✨" },
+            { pain: "吹半小時都未乾透，電費貴到爆", solution: "1400W超強馬達，濕髮3分鐘乾到半乾 ⚡" },
+            { pain: "風筒好重好熱，舉到手酸，長期用會傷手腕", solution: "只有420g，比普通手機輕，舉足一個鐘零問題 💪" },
+            { pain: "返工返屋企都要帶風筒，占晒背包位", solution: "摺疊後只有A5大小，塞靴靴甚至放手袋都得 🎒" }
         ]
     },
     {
         id: 2,
-        emoji: "🏠",
         name: "智能無線HEPA旋風吸塵機",
         brand: "Smartech",
         model: "SV-8178",
-        brandDesc: "Smartech - 香港本地智能家電品牌",
-        srp: "$1,498",
+        brandDesc: "Smartech - 香港本地智能家電領先品牌",
+        srp: "$1,299 (原價 $1,498，節省 $199)",
+        description: "28kPa超強吸力，無線設計。HEPA濾網過濾99.99%細菌。",
+        image: "image:283",
         specs: {
-            "吸力": "28kPa 業界領先",
-            "續航時間": "一次充電 35-40分鐘（足夠一層樓）",
-            "電池": "3000mAh 鋰電池（充3.5小時）",
-            "重量": "1.8kg（對比傳統3-5kg 輕半倍）",
-            "濾網": "HEPA 13級（過濾99.99%細菌病毒）",
-            "集塵容量": "0.7L",
-            "車尾箱模式": "✅ 洗完車直接吸乾淨"
+            "吸力": "28kPa 業界領先規格",
+            "馬達": "環保DC無刷馬達，運作高效",
+            "續航時間": "高速12分鐘 / 低速20分鐘 (足夠一層樓)",
+            "充電時間": "4.5小時快速充電",
+            "電池": "11.1V 2200mAh 鋰電池 (環保認證)",
+            "濾網": "HEPA H13級 (過濾99.99%細菌病毒)",
+            "集塵容量": "0.7L (少塵塵爆炸)", 
+            "重量": "1.8kg (傳統吸塵機3-5kg，輕半倍)"
         },
+        certifications: null,
+        salesScript: "王先生，你屋企有寵物啦？傳統吸塵機要牽尾線，樓梯卡住，廁所夠唔到，特別係車尾箱洗完車想即刻吸乾，根本冇可能。我地呢隻Smartech無線設計，加上HEPA濾網，連細菌病毒都過濾到99.99%，尤其係有小朋友或老人家嘅屋企，空氣質素好重要。最難得係淨重只有1.8kg，女性都掂到，男人就輕輕鬆鬆。而家拎埋佢走，升級你既家居服務計劃，個屋企乾淨又健康！",
         painPoints: [
-            { pain: "有寵物，毛髮到處都係", solution: "專門設計寵物毛吸力，一吸即淨" },
-            { pain: "傳統吸塵機要牽尾線，到處卡住", solution: "無線設計，樓梯、廁所、車尾箱全能吸" },
-            { pain: "吸完塵易過敏，家裡空氣污濁", solution: "HEPA濾網淨化空氣，細菌病毒out" },
-            { pain: "女性用傳統吸塵機手臂酸痛", solution: "1.8kg 輕巧，握感舒適，30分鐘無問題" }
+            { pain: "傳統吸塵機要牽尾線，樓梯廁所卡到煩", solution: "無線設計，隨處吸到，車尾箱洗完車即刻吸乾 ✅" },
+            { pain: "屋企有寵物毛髮，普通吸塵機吸唔乾淨", solution: "28kPa超強吸力 + HEPA濾網，毛髮塵蟎一吸淨 🐾" },
+            { pain: "女性用傳統吸塵機手臂酸痛，影響家務", solution: "只有1.8kg輕巧設計，輕鬆吸完一層樓零疲勞 💪" },
+            { pain: "用完吸塵機容易過敏，打噴嚏個不停", solution: "HEPA H13濾網淨化空氣，細菌病毒out，過敏减少 🛡️" }
         ]
     },
     {
         id: 3,
-        emoji: "💧",
         name: "即熱UV-C超濾飲水機",
         brand: "inno3C",
         model: "i-WD25",
-        brandDesc: "inno3C - 創新3C科技品牌，香港原廠研製",
-        srp: "$2,998",
+        brandDesc: "inno3C - 香港原廠研製，獲多個環保認證",
+        srp: "$2,288 (原價 $2,998，節省 $710)",
+        description: "4重過濾 + UV-C殺菌。3秒即熱，年電費只需$60。",
+        image: "image:185",
         specs: {
             "過濾系統": "4重過濾 + UV-C紫外光殺菌",
-            "第1層": "日本東麗(TORAY)超濾 Ultra-Filtration",
+            "第1層": "日本東麗(TORAY)超濾技術",
             "第2層": "活性碳纖維（去重金屬、氯氣、異味）",
             "第3層": "Ag+銀離子（長效抑制細菌繁殖）",
             "第4層": "隱藏UV-C紫外線（殺菌率99.99%）",
             "即熱溫度": "13種調節 (45°C至96-100°C)",
             "加熱速度": "只需3秒即出熱水",
-            "出水容量": "20種選擇（100ml至1200ml）",
-            "水箱容量": "3L手提式（全港最細、最適香港家居）",
-            "尺寸": "370×135×293mm",
-            "功率": "2000W",
-            "濾芯壽命": "1500L（約1年）",
-            "耗電": "25度/月（年電費$60，月省$40）"
+            "出水容量": "20種選擇（100ml至1200ml）"
         },
+        certifications: null,
+        salesScript: "陳生，你知香港既水管都有唔同既老化情況啦，成個社區越來越舊，有部水機係屋企，根本係直接同你過濾埋啲有害物質，身體都健康好多。特別係煲奶、整茶，飲落去都安心，講緊係99.99%滅菌，比醫院手術室仲淨。仲有，每個月買樽裝水都要成幾百蚊浪費，我地呢部機淨係用$60電費一年，遠遠低過樽裝水成本。簽約升級左你既服務計劃之餘，拎埋水機走，全家人都飲到乾淨健康嘅水！",
         painPoints: [
-            { pain: "每日燒水等到天荒地老，趕上班冇時間", solution: "3秒即熱（業界最快），早上起身倒杯就飲" },
-            { pain: "買樽裝水每月成幾百蚊，又環保污染", solution: "年電費$60，月省$40，遠低於樽裝水成本" },
-            { pain: "自來水有氯氣味，飲唔慣", solution: "活性碳纖維去氯，飲起來同蒸餾水咁純淨" },
-            { pain: "老人小朋友怕飲唔安全嘅水", solution: "UV-C + 3層殺菌，99.99%滅病菌，比醫院手術室更淨" }
+            { pain: "香港自來水有異味，煲奶都唔放心", solution: "日本東麗超濾 + UV-C殺菌，99.99%滅病菌，比樽裝水更淨 💧" },
+            { pain: "買樽裝水每月成蚊幾百蚊，又污染環境", solution: "年電費$60，月省$40，6個月已回本，環保又慳錢 ♻️" },
+            { pain: "每日燒水等到天荒地老，趕上班冇時間", solution: "3秒即熱業界最快，倒杯就飲，冇得等 ⚡" },
+            { pain: "屋企細位多，放唔到大機器", solution: "全港最細3L水箱設計，放冰箱上面都得，正正企 🏠" }
         ]
     },
     {
         id: 4,
-        emoji: "⭐",
         name: "即熱飲水機 + 超濾濾芯套裝",
         brand: "inno3C",
         model: "i-WD25 Bundle",
-        brandDesc: "inno3C - 創新3C科技品牌",
-        srp: "$3,596",
+        brandDesc: "inno3C - 香港原廠研製",
+        srp: "$2,680 (套裝優惠，主機 + 濾芯)",
+        description: "主機 + 額外濾芯。買機送濾芯，6個月無憂。",
+        image: "image:185",
         specs: {
             "包含": "主機 (內置1個濾芯) + 額外濾芯 1個",
-            "4重過濾": "同 i-WD25 一模一樣",
-            "濾芯壽命": "每個1500L (3-6個月)，內置+額外共可用6個月",
-            "相當於": "買機送濾芯，無額外成本",
+            "4重過濾": "同 i-WD25 一模一樣完整功能",
+            "濾芯壽命": "每個1500L (3-6個月使用)，共2個=6個月無憂",
+            "相當於": "買機送濾芯，後續零煩惱",
             "優勢": "到手即用，毋須立即再買濾芯",
-            "保修": "2年主機 + 終身客服支援",
-            "最適合": "送禮、企業團購、重視便利性"
+            "保修": "12個月主機 + 終身客服支援",
+            "最適合": "送禮、企業團購、重視便利性嘅客戶"
         },
+        certifications: null,
+        salesScript: "李小姐，套裝版最緊係送埋濾芯，買咗機唔使每隔幾個月又要搵濾芯，成件事變得超方便。特別係送禮嗰陣，你送部機俾人，人地唔洗擔心日後自己搞濾芯咁麻煩。企業同事用更加好，統一管理濾芯，6個月前完全冇須擔心。不如同你升級左你既服務計劃，順便送埋套裝版水機俾客戶，買一送一感覺，個客戶一定著數到！",
         painPoints: [
-            { pain: "買咗機又要擔心後續濾芯費用", solution: "額外贈送1個濾芯，6個月內完全無煩惱" },
-            { pain: "送禮怕收禮人日後自己搞濾芯", solution: "送到手已經包含2個濾芯，收禮人無負擔" },
-            { pain: "企業團購，怕員工濾芯管理亂", solution: "套裝模式清晰，員工容易管理" },
-            { pain: "唔知幾時要換濾芯", solution: "內置 + 額外共2個，6個月前完全無須擔心" }
+            { pain: "買咗機又要擔心後續濾芯費用同麻煩", solution: "額外贈送1個濾芯，6個月內完全無煩惱 ✅" },
+            { pain: "送禮怕收禮人日後自己搞濾芯", solution: "送到手已經包含2個濾芯，收禮人開心到爆 🎁" },
+            { pain: "企業團購，怕員工濾芯管理亂晒", solution: "套裝模式清晰，員工容易管理，公司形象好 🏢" },
+            { pain: "唔知幾時要換濾芯，忘記咗就要飲污水", solution: "內置 + 額外共2個濾芯，6個月前完全無須擔心 💯" }
         ]
     },
     {
         id: 5,
-        emoji: "🔊",
         name: "Jelly Fish 藍牙喇叭",
         brand: "Jelly Fish",
         model: "Bluetooth Speaker",
-        brandDesc: "Jelly Fish - 新興音樂科技品牌",
-        srp: "$368",
+        brandDesc: "Jelly Fish - 新興音樂科技品牌，專注高品質音效",
+        srp: "$268 (原價 $368，節省 $100)",
+        description: "IPX7防水，30小時續航。360度環繞音效。",
+        image: "image:284",
         specs: {
             "功率": "10W 高保真音效",
-            "頻率響應": "20Hz - 20kHz（全頻段）",
+            "頻率響應": "20Hz - 20kHz （全頻段音質清晰）",
             "續航時間": "30小時連續播放（待機500小時）",
-            "充電時間": "2小時",
-            "防水等級": "IPX7（浸水1米、30分鐘冇事）",
-            "重量": "280g",
-            "尺寸": "直徑8cm x 高10cm（易 carry）"
+            "充電時間": "2小時快速充電",
+            "防水等級": "IPX7防水 （浸水1米、30分鐘冇事）",
+            "重量": "280g 易 carry",
+            "尺寸": "直徑8cm x 高10cm （手掌大小）",
+            "連接": "5.0藍牙 + 3.5mm AUX輔助線"
         },
+        certifications: null,
+        salesScript: "黃先生，夏天去海邊烤肉，朋友仔都靠手機放歌，但放到一陣就冇電啦。我地呢隻喇叭IPX7防水，被水潑到濺到都冇事，30小時續航力，個整天派對都冇問題。健身房租用喇叭要畀錢，帶埋呢隻高品質喇叭，私人健身課堂級數音效秒殺gym equipment。最贏係宿舍舍友唔應聲冇氣氛，呢隻360度環繞音，間房變party room，朋友仔一定著數！不如升級服務計劃，送埋藍牙喇叭俾你，日日都有好音樂相伴！",
         painPoints: [
-            { pain: "去海邊烤肉，手機放浪度冇聲", solution: "IPX7 防水，濺水冇事，獨立喇叭夠聲" },
-            { pain: "健身房租用喇叭要畀錢", solution: "帶上呢個喇叭，私人健身課冇問題" },
-            { pain: "宿舍舍友唔睬，一個人無氣氛", solution: "360度環繞音，間房變 party room" },
-            { pain: "派對要接客人歌，插線超麻煩", solution: "30小時續航，無線 free play" }
+            { pain: "去海邊烤肉靠手機放歌，水濺一下手機咁", solution: "IPX7防水濺到都冇事，獨立喇叭音量足夠 🌊" },
+            { pain: "健身房用租借喇叭好唔衛生又要額外收費", solution: "帶埋呢隻高品質喇叭，私人健身課堂級音效 🏋️" },
+            { pain: "宿舍舍友冇反應，一個人聽歌零氣氛", solution: "360度環繞音，間房變party room，聚會必備 🎉" },
+            { pain: "派對要接客人歌，插線超麻煩易掉線", solution: "30小時續航，藍牙無線free play，穩定又方便 🎶" }
         ]
     },
     {
         id: 6,
-        emoji: "🔋",
-        name: "M0 OLED QI2 超薄磁吸無線充電寶",
+        name: "M0 OLED Qi2 超薄磁吸無線充電寶",
         brand: "inno3C",
         model: "i-3C5M2",
-        brandDesc: "inno3C - 創新3C科技品牌",
-        srp: "$368",
+        brandDesc: "inno3C - 創新3C科技品牌，獲國際安全認證",
+        srp: "$248 (原價 $368，節省 $120)",
+        description: "5000mAh，9.6mm超薄。20W PD + 15W Qi2無線快充。",
+        image: "image:285",
         specs: {
-            "容量": "5000mAh（一般手機1.2倍）",
-            "尺寸": "厚度只有 4mm（信用卡厚度！）",
-            "重量": "125g（半部 iPhone 重）",
-            "無線輸出": "15W Qi2 標準（磁吸自動對齊）",
-            "有線輸出": "USB-C 15W + USB-A 5W 雙輸出",
-            "快充時間": "15分鐘快充50%（救急用）",
-            "磁吸力": "強力N52磁石（唔會掉）"
+            "容量": "5000mAh （一般手機1.2倍電力）",
+            "尺寸": "102mm × 66mm × 9.6mm （超薄輕巧）",
+            "重量": "110g （比半部iPhone輕）",
+            "無線快充": "Qi2磁吸快充 15W (Max.)（一拍即充）",
+            "有線快充": "Type-C PD3.0 雙向快充 20W (Max.) 輸出 / 18W (Max.) 輸入",
+            "快充時間": "15分鐘快充50% （救急用）",
+            "顯示屏": "OLED彩色屏幕 （實時顯示電量、功率）",
+            "飛機": "✅ 可帶上飛機 （符合民航局規定）"
         },
+        certifications: [
+            "✅ CCC認證 - 中國國家強制性認證 (最嚴格安全標準)",
+            "✅ 3C認證 - 符合國內電器安全規定",
+            "✅ CE認證 - 歐盟安全認證 (國際通用)",
+            "✅ 可帶上飛機 - 符合民航局規定 (5000mAh內)",
+            "✅ 多重安全防護 - 防短路、防過載、防過熱、防過流",
+            "✅ 智能控溫系統 - 自動調節溫度防過熱"
+        ],
+        salesScript: "王先生，我自己都有試過，返緊工嘅時候，唔記得拔走屋企個充電器，放左工返去，個充電器漲到好似爆谷咁。隨住時間，有啲電器都要留意幾多少，以察安全。我地呢隻有CCC、3C同CE多重安全認證，防過熱、防過流樣樣齊，唔單只上到飛機，9.6mm 超薄設計，20W PD快充加15W無線快充，即刻同你升級左你既服務計劃之餘，拎走埋呢隻安全認證磁吸充電，咁OT幾耐都唔擔心啦！",
         painPoints: [
-            { pain: "出門手機無電，找充電線超麻煩", solution: "磁吸即啲即有電，冇線乜嘢煩惱" },
-            { pain: "充電線成日斷掉，重複買浪費", solution: "無線磁吸永遠用到爛" },
-            { pain: "攞出背包要整理線纏纏", solution: "4mm 卡厚度，平放背包角落" },
-            { pain: "開會/見客要玩手機，線會掉", solution: "磁吸牢牢貼實，完全唔洗擔心" }
+            { pain: "劣質充電寶會發熱膨脹，甚至有爆炸危險", solution: "CCC 3C CE多重安全認證 + 智能控溫，危險out 🛡️" },
+            { pain: "出門手機無電，找充電線超麻煩", solution: "磁吸一拍即充 15W無線快充，無線一刻即有電 ⚡" },
+            { pain: "充電線成日斷掉，重複買浪費錢", solution: "無線磁吸永遠用到爛，一次投資終身享受 💪" },
+            { pain: "想帶充電寶上飛機，擔心安全問題", solution: "符合民航局規定，CCC認證最高安全標準，放心帶上機 ✈️" }
         ]
     }
 ];
 
-let currentUser = null;
-let currentGadget = null;
-let selectedGadgets = [];
-let reports = JSON.parse(localStorage.getItem('sales_reports')) || [];
-
-document.getElementById('user-role').addEventListener('change', function() {
-    document.getElementById('admin-pass-section').style.display = this.value === 'admin' ? 'block' : 'none';
-});
-
-function initializeGadgets() {
-    const grid = document.getElementById('gadgets-grid');
-    grid.innerHTML = '';
+function renderShowcase() {
+    const showcase = document.getElementById('showcase');
+    showcase.innerHTML = '';
+    
     GADGETS.forEach(gadget => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'gadget-card';
-        card.id = `gadget-card-${gadget.id}`;
-        card.innerHTML = `<div class="gadget-emoji">${gadget.emoji}</div><div class="gadget-text"><strong>${gadget.brand}</strong><br>${gadget.model}</div><div class="gadget-qty" id="qty-${gadget.id}"></div>`;
-        card.onclick = (e) => { e.preventDefault(); selectGadgetForDetail(gadget); };
-        grid.appendChild(card);
+        const card = document.createElement('div');
+        card.className = 'gadget-card-showcase';
+        card.innerHTML = `
+            <div class="card-image" id="img-${gadget.id}">
+                <img src="loading..." alt="${gadget.model}" style="width: 100%; height: 100%; object-fit: contain; padding: 1rem;">
+            </div>
+            <div class="card-content">
+                <div class="card-brand">${gadget.brand}</div>
+                <div class="card-model">${gadget.name}</div>
+                <div class="card-description">${gadget.description}</div>
+                <div class="card-srp">${gadget.srp}</div>
+                <div class="card-specs">
+                    <span class="spec-badge">查看詳情</span>
+                </div>
+                <button class="card-btn" onclick="openModal(${gadget.id})">📖 查看完整資訊</button>
+            </div>
+        `;
+        showcase.appendChild(card);
+        
+        // Load placeholder images
+        const imgElement = card.querySelector('img');
+        imgElement.style.background = getColorGradient(gadget.id);
+        imgElement.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f0f4f8' width='200' height='200'/%3E%3C/svg%3E`;
+        imgElement.alt = `${gadget.model}`;
     });
 }
 
-function selectGadgetForDetail(gadget) {
-    currentGadget = gadget;
+function getColorGradient(id) {
+    const colors = ['#fef3c7', '#fce7f3', '#dbeafe', '#dcfce7', '#f0e7fe', '#fef2f2', '#e0f2fe'];
+    return colors[id % colors.length];
+}
+
+function openModal(id) {
+    const gadget = GADGETS[id];
     
-    document.getElementById('detail-emoji').textContent = gadget.emoji;
-    document.getElementById('detail-name').textContent = gadget.name;
-    document.getElementById('detail-brand').textContent = gadget.brand;
-    document.getElementById('detail-brand-desc').textContent = gadget.brandDesc;
-    document.getElementById('detail-model').textContent = gadget.model;
-    document.getElementById('detail-srp').textContent = gadget.srp;
+    document.getElementById('modalBrand').textContent = gadget.brand;
+    document.getElementById('modalName').textContent = gadget.name;
+    document.getElementById('modalModel').textContent = gadget.model;
+    document.getElementById('modalSRP').textContent = gadget.srp;
+    document.getElementById('modalDesc').textContent = gadget.brandDesc;
     
-    let specHtml = '';
+    // Set image
+    const modalImage = document.getElementById('modalImage');
+    const img = document.createElement('img');
+    img.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='${getColorGradient(id)}' width='300' height='300'/%3E%3Ctext x='50%' y='50%' font-size='16' text-anchor='middle' dy='.3em' fill='%23999'%3E${gadget.model}%3C/text%3E%3C/svg%3E`;
+    img.alt = gadget.model;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '100%';
+    modalImage.innerHTML = '';
+    modalImage.appendChild(img);
+    
+    // Specs
+    let specHtml = '<h3>📋 詳細規格</h3><div class="spec-grid">';
     for (let [key, value] of Object.entries(gadget.specs)) {
         specHtml += `<div class="spec-item"><div class="spec-label">${key}</div><div class="spec-value">${value}</div></div>`;
     }
-    document.getElementById('spec-grid').innerHTML = specHtml;
+    specHtml += '</div>';
+    document.getElementById('specSection').innerHTML = specHtml;
     
-    let painHtml = '';
-    gadget.painPoints.forEach(item => {
+    // Certifications
+    if (gadget.certifications && gadget.certifications.length > 0) {
+        let certHtml = '<h3>✅ 國際安全認證</h3>';
+        gadget.certifications.forEach(cert => {
+            certHtml += `<div class="cert-item">${cert}</div>`;
+        });
+        document.getElementById('certSection').innerHTML = certHtml;
+        document.getElementById('certSection').style.display = 'block';
+    } else {
+        document.getElementById('certSection').style.display = 'none';
+    }
+    
+    // Script
+    let scriptHtml = '<h3>📢 銷售技巧 Script</h3><div class="script-text">' + gadget.salesScript + '</div>';
+    document.getElementById('scriptSection').innerHTML = scriptHtml;
+    
+    // Pain Points
+    let painHtml = '<h3>💡 客戶痛點 & 解決方案</h3>';
+    gadget.painPoints.forEach(point => {
         painHtml += `
-            <div class="pain-point-row">
-                <div class="pain-point-left">
-                    <div class="pain-title">❌ 問題</div>
-                    <div class="pain-text">${item.pain}</div>
+            <div class="pain-point">
+                <div class="pain-left">
+                    <div class="pain-title">❌ 客戶痛點</div>
+                    <div class="pain-text">${point.pain}</div>
                 </div>
-                <div class="pain-point-right">
-                    <div class="solution-title">✅ 解決</div>
-                    <div class="solution-text">${item.solution}</div>
+                <div class="pain-right">
+                    <div class="pain-title">✅ 我地方案</div>
+                    <div class="pain-text">${point.solution}</div>
                 </div>
             </div>
         `;
     });
-    document.getElementById('pain-points-content').innerHTML = painHtml;
+    document.getElementById('painSection').innerHTML = painHtml;
     
-    document.getElementById('gadget-detail').classList.add('active');
-    document.getElementById('current-qty').value = '0';
-    document.getElementById('qty-label').textContent = `${gadget.name} - 輸入銷售數量`;
+    document.getElementById('detailModal').classList.add('active');
 }
 
-function addGadgetToList() {
-    if (!currentGadget) { alert('❌ 請先選擇禮品'); return; }
-    
-    const qty = parseInt(document.getElementById('current-qty').value) || 0;
-    if (qty <= 0) { alert('❌ 請輸入正確數量'); return; }
-    
-    const existing = selectedGadgets.find(g => g.id === currentGadget.id);
-    if (existing) {
-        existing.qty = qty;
-    } else {
-        selectedGadgets.push({
-            id: currentGadget.id,
-            name: currentGadget.name,
-            brand: currentGadget.brand,
-            model: currentGadget.model,
-            emoji: currentGadget.emoji,
-            qty: qty
-        });
-    }
-    
-    updateGadgetsList();
-    document.getElementById('current-qty').value = '0';
+function closeModal() {
+    document.getElementById('detailModal').classList.remove('active');
 }
 
-function updateGadgetsList() {
-    const listHtml = selectedGadgets.map((g, idx) => `
-        <div class="gadget-item">
-            <div class="gadget-item-info">
-                <div class="gadget-item-name">${g.emoji} ${g.brand} ${g.model}</div>
-                <div class="gadget-item-qty">數量: ${g.qty} 件</div>
-            </div>
-            <button type="button" class="remove-btn" onclick="removeGadgetFromList(${g.id})">🗑️ 移除</button>
-        </div>
-    `).join('');
-    
-    const listDiv = document.getElementById('gadgets-list');
-    listDiv.innerHTML = listHtml;
-    
-    GADGETS.forEach(g => {
-        const selected = selectedGadgets.find(sg => sg.id === g.id);
-        const qtyLabel = document.getElementById(`qty-${g.id}`);
-        if (selected) {
-            qtyLabel.textContent = `✅ x${selected.qty}`;
-        } else {
-            qtyLabel.textContent = '';
-        }
-    });
-    
-    document.getElementById('selected-list').style.display = selectedGadgets.length > 0 ? 'block' : 'none';
-}
+document.getElementById('detailModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
 
-function removeGadgetFromList(id) {
-    selectedGadgets = selectedGadgets.filter(g => g.id !== id);
-    updateGadgetsList();
-}
-
-function handleLogin() {
-    const name = document.getElementById('user-name').value.trim();
-    const role = document.getElementById('user-role').value;
-    const pass = document.getElementById('admin-pass').value;
-    
-    if (!name) { alert('❌ 請輸入名字'); return; }
-    if (!role) { alert('❌ 請選擇身份'); return; }
-    if (role === 'admin' && pass !== ADMIN_PASSWORD) { alert('❌ 密碼錯誤'); return; }
-    
-    currentUser = { name, role };
-    document.getElementById('login-screen').style.display = 'none';
-    
-    if (role === 'staff') {
-        document.getElementById('staff-screen').style.display = 'block';
-        document.getElementById('staff-name').textContent = `同事: ${name}`;
-        document.getElementById('staff-date').textContent = `日期: ${new Date().toLocaleDateString('zh-HK')}`;
-        initializeGadgets();
-    } else {
-        document.getElementById('admin-screen').style.display = 'block';
-        refreshAdminView();
-    }
-}
-
-function logout() {
-    currentUser = null;
-    currentGadget = null;
-    selectedGadgets = [];
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('staff-screen').style.display = 'none';
-    document.getElementById('admin-screen').style.display = 'none';
-    document.getElementById('user-name').value = '';
-    document.getElementById('user-role').value = '';
-    document.getElementById('admin-pass').value = '';
-}
-
-function submitStaffReport(e) {
-    e.preventDefault();
-    
-    const leader = document.getElementById('leader').value;
-    if (!leader) { alert('❌ 請選擇 Leader'); return; }
-    
-    const cis = parseInt(document.getElementById('cis').value) || 0;
-    const vas = parseInt(document.getElementById('vas').value) || 0;
-    const adhoc1 = parseInt(document.getElementById('adhoc1').value) || 0;
-    const adhoc2 = parseInt(document.getElementById('adhoc2').value) || 0;
-    const adhoc3 = parseInt(document.getElementById('adhoc3').value) || 0;
-    const notes = document.getElementById('notes').value;
-    
-    const gadgetsList = selectedGadgets.length > 0 
-        ? selectedGadgets.map(g => `${g.brand} ${g.model} (x${g.qty})`).join(' | ')
-        : '無';
-    
-    const now = new Date();
-    const report = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().split(' ')[0],
-        staff: currentUser.name,
-        leader,
-        cis, vas, adhoc1, adhoc2, adhoc3,
-        gadgets: gadgetsList,
-        notes
-    };
-    
-    reports.push(report);
-    localStorage.setItem('sales_reports', JSON.stringify(reports));
-    
-    // 自動同步到 Google Sheets
-    syncReportToGoogle(report);
-    
-    document.getElementById('success-msg').classList.add('show');
-    setTimeout(() => document.getElementById('success-msg').classList.remove('show'), 3000);
-    
-    e.target.reset();
-    document.getElementById('gadget-detail').classList.remove('active');
-    document.getElementById('selected-list').style.display = 'none';
-    selectedGadgets = [];
-    initializeGadgets();
-    currentGadget = null;
-}
-
-// 單筆同步到 Google Sheets
-function syncReportToGoogle(report) {
-    const values = [[
-        report.date,
-        report.time,
-        report.staff,
-        report.leader,
-        report.cis,
-        report.vas,
-        report.adhoc1,
-        report.adhoc2,
-        report.adhoc3,
-        report.gadgets,
-        report.notes
-    ]];
-    
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/'Sheet1'!A:K:append?valueInputOption=USER_ENTERED&key=${GOOGLE_API_KEY}`;
-    
-    axios.post(url, { values })
-        .then(() => {
-            console.log('✅ 已同步到 Google Sheets');
-        })
-        .catch(err => {
-            console.log('⚠️ Google Sheets 同步失敗:', err.response?.data || err.message);
-        });
-}
-
-// 全部同步到 Google Sheets
-function syncToGoogleSheets() {
-    if (!GOOGLE_SHEET_ID || !GOOGLE_API_KEY) {
-        alert('❌ Google Sheets 設定未完成');
-        return;
-    }
-    
-    if (reports.length === 0) { 
-        alert('❌ 沒有數據'); 
-        return; 
-    }
-    
-    document.getElementById('sync-status').textContent = '⏳ 正在同步...';
-    
-    const values = reports.map(r => [
-        r.date,
-        r.time || '',
-        r.staff,
-        r.leader || '',
-        r.cis,
-        r.vas,
-        r.adhoc1,
-        r.adhoc2,
-        r.adhoc3,
-        r.gadgets,
-        r.notes
-    ]);
-    
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/'Sheet1'!A:K:append?valueInputOption=USER_ENTERED&key=${GOOGLE_API_KEY}`;
-    
-    axios.post(url, { values })
-        .then((response) => {
-            document.getElementById('sync-status').textContent = '✅ 已同步到 Google Sheets';
-            setTimeout(() => document.getElementById('sync-status').textContent = '', 3000);
-            alert('✅ 已同步 ' + reports.length + ' 筆數據到 Google Sheets\n\n💾 數據同時已保存在本地 LocalStorage');
-        })
-        .catch(err => {
-            document.getElementById('sync-status').textContent = '❌ 同步失敗';
-            setTimeout(() => document.getElementById('sync-status').textContent = '', 3000);
-            console.error('Google Sheets 同步錯誤:', err.response?.data || err.message);
-            alert('❌ 同步失敗: ' + (err.response?.data?.error?.message || err.message));
-        });
-}
-
-function refreshAdminView() {
-    const today = new Date().toISOString().split('T')[0];
-    const todayData = reports.filter(r => r.date === today);
-    
-    let cis = 0, vas = 0, adhoc = 0;
-    todayData.forEach(r => { cis += r.cis; vas += r.vas; adhoc += r.adhoc1 + r.adhoc2 + r.adhoc3; });
-    
-    document.getElementById('stats-grid').innerHTML = `
-        <div class="stat-box"><div>📱 今日 CIS</div><div class="stat-value">${cis}</div></div>
-        <div class="stat-box"><div>➕ 今日 VAS</div><div class="stat-value" style="color: #10b981;">${vas}</div></div>
-        <div class="stat-box"><div>🎁 Ad-Hoc VAS</div><div class="stat-value" style="color: #ef4444;">${adhoc}</div></div>
-        <div class="stat-box"><div>📊 報數次數</div><div class="stat-value" style="color: #8b5cf6;">${todayData.length}</div></div>
-    `;
-    
-    const tbody = document.getElementById('table-body');
-    tbody.innerHTML = '';
-    
-    if (reports.length === 0) {
-        document.getElementById('no-data-msg').style.display = 'block';
-        return;
-    }
-    
-    document.getElementById('no-data-msg').style.display = 'none';
-    reports.slice().reverse().forEach(r => {
-        tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.staff}</td><td>${r.leader || '-'}</td><td>${r.cis}</td><td>${r.vas}</td><td>${r.adhoc1}</td><td>${r.adhoc2}</td><td>${r.adhoc3}</td><td>${r.gadgets}</td><td>${r.notes}</td></tr>`;
-    });
-}
-
-function exportToCSV() {
-    if (reports.length === 0) { alert('❌ 沒有數據'); return; }
-    
-    let csv = '日期,時間,同事,Leader,CIS,VAS,2500M,Router,PCD NEW,禮品銷售,備註\n';
-    reports.forEach(r => {
-        csv += `${r.date},${r.time || ''},${r.staff},${r.leader || ''},${r.cis},${r.vas},${r.adhoc1},${r.adhoc2},${r.adhoc3},"${r.gadgets}","${r.notes}"\n`;
-    });
-    
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv; charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-}
-
-initializeGadgets();
+renderShowcase();
 </script>
 
 </body>
