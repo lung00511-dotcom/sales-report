@@ -11,8 +11,11 @@
         
         .navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; }
         .navbar h1 { font-size: 1.4rem; font-weight: bold; }
-        .navbar-actions { display: flex; gap: 1rem; align-items: center; }
-        .logout-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .navbar-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .logout-btn, .sync-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .sync-btn { background: rgba(100,255,100,0.3); }
+        .sync-btn:hover { background: rgba(100,255,100,0.5); }
+        .sync-status { color: white; font-size: 0.9rem; padding: 0.5rem 1rem; }
         
         .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
         
@@ -87,6 +90,7 @@
         
         .table-card { background: white; border-radius: 8px; overflow: hidden; }
         .table-header { background: #f3f4f6; padding: 1rem 1.5rem; display: flex; justify-content: space-between; }
+        .export-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
         .export-btn { padding: 0.8rem 1rem; background: #3b82f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
         
         table { width: 100%; border-collapse: collapse; }
@@ -208,6 +212,9 @@
     <div class="navbar">
         <h1>📊 管理員儀表板</h1>
         <div class="navbar-actions">
+            <div class="sync-status" id="sync-status"></div>
+            <button class="sync-btn" onclick="syncToGoogleSheets()">☁️ 同步到 Google Sheets</button>
+            <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
             <button class="logout-btn" onclick="logout()">🚪 登出</button>
         </div>
     </div>
@@ -217,7 +224,6 @@
         <div class="table-card">
             <div class="table-header">
                 <h3>📈 銷售統計表</h3>
-                <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
             </div>
             <div style="overflow-x: auto;">
                 <table>
@@ -236,6 +242,9 @@
 
 <script>
 const ADMIN_PASSWORD = "admin2024";
+// ⚠️ 改成你嘅 Google Sheets API 資訊
+const GOOGLE_SHEET_ID = "1i4BQoxepAJYA_LtLcc-vsClhoVWwPmfA6coU-SNaGw8";
+const GOOGLE_API_KEY = "AIzaSyAoaREbhHFto0z4RoJaylmnJi06sOEj8A4";
 
 const GADGETS = [
     {
@@ -416,7 +425,7 @@ const GADGETS = [
 
 let currentUser = null;
 let currentGadget = null;
-let selectedGadgets = []; // 存放已選擇嘅禮品
+let selectedGadgets = [];
 let reports = JSON.parse(localStorage.getItem('sales_reports')) || [];
 
 document.getElementById('user-role').addEventListener('change', function() {
@@ -481,10 +490,9 @@ function addGadgetToList() {
     const qty = parseInt(document.getElementById('current-qty').value) || 0;
     if (qty <= 0) { alert('❌ 請輸入正確數量'); return; }
     
-    // 檢查係咪已經加過
     const existing = selectedGadgets.find(g => g.id === currentGadget.id);
     if (existing) {
-        existing.qty = qty; // 更新數量
+        existing.qty = qty;
     } else {
         selectedGadgets.push({
             id: currentGadget.id,
@@ -514,7 +522,6 @@ function updateGadgetsList() {
     const listDiv = document.getElementById('gadgets-list');
     listDiv.innerHTML = listHtml;
     
-    // 更新卡片上嘅數量標籤
     GADGETS.forEach(g => {
         const selected = selectedGadgets.find(sg => sg.id === g.id);
         const qtyLabel = document.getElementById(`qty-${g.id}`);
@@ -525,7 +532,6 @@ function updateGadgetsList() {
         }
     });
     
-    // 顯示/隱藏清單區域
     document.getElementById('selected-list').style.display = selectedGadgets.length > 0 ? 'block' : 'none';
 }
 
@@ -582,7 +588,6 @@ function submitStaffReport(e) {
     const adhoc3 = parseInt(document.getElementById('adhoc3').value) || 0;
     const notes = document.getElementById('notes').value;
     
-    // 生成禮品銷售記錄（多件產品）
     const gadgetsList = selectedGadgets.length > 0 
         ? selectedGadgets.map(g => `${g.brand} ${g.model} (x${g.qty})`).join(' | ')
         : '無';
@@ -601,6 +606,9 @@ function submitStaffReport(e) {
     reports.push(report);
     localStorage.setItem('sales_reports', JSON.stringify(reports));
     
+    // 自動同步到 Google Sheets
+    syncReportToGoogle(report);
+    
     document.getElementById('success-msg').classList.add('show');
     setTimeout(() => document.getElementById('success-msg').classList.remove('show'), 3000);
     
@@ -610,6 +618,77 @@ function submitStaffReport(e) {
     selectedGadgets = [];
     initializeGadgets();
     currentGadget = null;
+}
+
+// 單筆同步到 Google Sheets
+function syncReportToGoogle(report) {
+    const values = [[
+        report.date,
+        report.time,
+        report.staff,
+        report.leader,
+        report.cis,
+        report.vas,
+        report.adhoc1,
+        report.adhoc2,
+        report.adhoc3,
+        report.gadgets,
+        report.notes
+    ]];
+    
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/'Sheet1'!A:K:append?valueInputOption=USER_ENTERED&key=${GOOGLE_API_KEY}`;
+    
+    axios.post(url, { values })
+        .then(() => {
+            console.log('✅ 已同步到 Google Sheets');
+        })
+        .catch(err => {
+            console.log('⚠️ Google Sheets 同步失敗:', err.response?.data || err.message);
+        });
+}
+
+// 全部同步到 Google Sheets
+function syncToGoogleSheets() {
+    if (!GOOGLE_SHEET_ID || !GOOGLE_API_KEY) {
+        alert('❌ Google Sheets 設定未完成');
+        return;
+    }
+    
+    if (reports.length === 0) { 
+        alert('❌ 沒有數據'); 
+        return; 
+    }
+    
+    document.getElementById('sync-status').textContent = '⏳ 正在同步...';
+    
+    const values = reports.map(r => [
+        r.date,
+        r.time || '',
+        r.staff,
+        r.leader || '',
+        r.cis,
+        r.vas,
+        r.adhoc1,
+        r.adhoc2,
+        r.adhoc3,
+        r.gadgets,
+        r.notes
+    ]);
+    
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/'Sheet1'!A:K:append?valueInputOption=USER_ENTERED&key=${GOOGLE_API_KEY}`;
+    
+    axios.post(url, { values })
+        .then((response) => {
+            document.getElementById('sync-status').textContent = '✅ 已同步到 Google Sheets';
+            setTimeout(() => document.getElementById('sync-status').textContent = '', 3000);
+            alert('✅ 已同步 ' + reports.length + ' 筆數據到 Google Sheets\n\n💾 數據同時已保存在本地 LocalStorage');
+        })
+        .catch(err => {
+            document.getElementById('sync-status').textContent = '❌ 同步失敗';
+            setTimeout(() => document.getElementById('sync-status').textContent = '', 3000);
+            console.error('Google Sheets 同步錯誤:', err.response?.data || err.message);
+            alert('❌ 同步失敗: ' + (err.response?.data?.error?.message || err.message));
+        });
 }
 
 function refreshAdminView() {
@@ -648,7 +727,7 @@ function exportToCSV() {
         csv += `${r.date},${r.time || ''},${r.staff},${r.leader || ''},${r.cis},${r.vas},${r.adhoc1},${r.adhoc2},${r.adhoc3},"${r.gadgets}","${r.notes}"\n`;
     });
     
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv; charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
