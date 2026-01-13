@@ -12,7 +12,7 @@
         .navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; }
         .navbar h1 { font-size: 1.4rem; font-weight: bold; }
         .navbar-actions { display: flex; gap: 1rem; align-items: center; }
-        .logout-btn, .sync-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .logout-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
         .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
         
@@ -34,9 +34,10 @@
         .gadgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
         .gadget-card { padding: 1rem; background: white; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
         .gadget-card:hover { border-color: #3b82f4; background: #eff6ff; }
-        .gadget-card.active { background: #3b82f4; color: white; border-color: #1e40af; }
+        .gadget-card.selected { background: #3b82f4; color: white; border-color: #1e40af; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
         .gadget-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
         .gadget-text { font-size: 0.75rem; line-height: 1.2; }
+        .gadget-qty { font-size: 0.7rem; background: rgba(0,0,0,0.1); padding: 0.3rem 0.6rem; border-radius: 4px; margin-top: 0.5rem; }
         
         .gadget-detail { display: none; background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #3b82f4; }
         .gadget-detail.active { display: block; animation: slideIn 0.3s ease; }
@@ -61,7 +62,21 @@
         .solution-title { font-weight: bold; color: #10b981; margin-bottom: 0.3rem; font-size: 0.9rem; }
         .pain-text, .solution-text { font-size: 0.9rem; line-height: 1.5; }
         
-        .qty-input { display: none; margin-bottom: 1.5rem; }
+        .qty-input { background: white; padding: 1.2rem; border-radius: 8px; border-left: 3px solid #10b981; margin-bottom: 1rem; }
+        .qty-input label { font-weight: bold; color: #10b981; margin-bottom: 0.5rem; }
+        .qty-input input { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; }
+        .add-gadget-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .add-gadget-btn:hover { opacity: 0.9; }
+        
+        .selected-gadgets { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .selected-gadgets h3 { color: #3b82f4; margin-bottom: 1rem; font-size: 1.1rem; }
+        .gadget-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f9fafb; border-radius: 6px; margin-bottom: 0.8rem; border-left: 3px solid #3b82f4; }
+        .gadget-item-info { flex: 1; }
+        .gadget-item-name { font-weight: bold; color: #1f2937; }
+        .gadget-item-qty { color: #6b7280; font-size: 0.9rem; }
+        .remove-btn { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .remove-btn:hover { opacity: 0.9; }
+        
         .submit-btn { width: 100%; padding: 1.1rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 1.5rem; }
         .success-alert { display: none; padding: 1rem; background: #d1fae5; color: #065f46; border-radius: 8px; margin-top: 1rem; text-align: center; font-weight: bold; }
         .success-alert.show { display: block; }
@@ -72,7 +87,6 @@
         
         .table-card { background: white; border-radius: 8px; overflow: hidden; }
         .table-header { background: #f3f4f6; padding: 1rem 1.5rem; display: flex; justify-content: space-between; }
-        .export-btns { display: flex; gap: 1rem; }
         .export-btn { padding: 0.8rem 1rem; background: #3b82f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
         
         table { width: 100%; border-collapse: collapse; }
@@ -116,7 +130,7 @@
         <div class="form-card">
             <h2>📝 填寫今日銷售數據</h2>
             <form onsubmit="submitStaffReport(event)">
-                <h3 style="margin-bottom: 1rem; color: #3b82f4;">🎁 禮品銷售 (點擊查看詳情)</h3>
+                <h3 style="margin-bottom: 1rem; color: #3b82f4;">🎁 禮品銷售 (點擊查看詳情 + 選擇數量)</h3>
                 <div class="gadgets-grid" id="gadgets-grid"></div>
                 
                 <div id="gadget-detail" class="gadget-detail">
@@ -137,13 +151,18 @@
                         <h4>💡 真實顧客 Pain Point & 解決方案</h4>
                         <div id="pain-points-content"></div>
                     </div>
+                    
+                    <div class="qty-input">
+                        <label for="current-qty" id="qty-label">輸入銷售數量</label>
+                        <input type="number" id="current-qty" min="0" value="0" />
+                        <button type="button" class="add-gadget-btn" onclick="addGadgetToList()" style="margin-top: 0.8rem; width: 100%;">➕ 加入清單</button>
+                    </div>
                 </div>
                 
-                <div class="qty-input">
-                    <div class="form-group">
-                        <label id="qty-label">數量</label>
-                        <input type="number" id="gadget-qty" min="0" value="0" />
-                    </div>
+                <!-- 已選擇禮品清單 -->
+                <div id="selected-list" class="selected-gadgets" style="display: none;">
+                    <h3>✅ 已選擇禮品</h3>
+                    <div id="gadgets-list"></div>
                 </div>
                 
                 <h3 style="margin-top: 2rem; color: #3b82f4;">📊 銷售數據</h3>
@@ -198,15 +217,13 @@
         <div class="table-card">
             <div class="table-header">
                 <h3>📈 銷售統計表</h3>
-                <div class="export-btns">
-                    <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
-                </div>
+                <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
             </div>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>日期</th><th>同事</th><th>Leader</th><th>CIS</th><th>VAS</th><th>2500M</th><th>Router</th><th>PCD NEW</th><th>禮品</th><th>備註</th>
+                            <th>日期</th><th>同事</th><th>Leader</th><th>CIS</th><th>VAS</th><th>2500M</th><th>Router</th><th>PCD NEW</th><th>禮品銷售</th><th>備註</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -398,7 +415,8 @@ const GADGETS = [
 ];
 
 let currentUser = null;
-let selectedGadget = null;
+let currentGadget = null;
+let selectedGadgets = []; // 存放已選擇嘅禮品
 let reports = JSON.parse(localStorage.getItem('sales_reports')) || [];
 
 document.getElementById('user-role').addEventListener('change', function() {
@@ -412,15 +430,15 @@ function initializeGadgets() {
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'gadget-card';
-        card.innerHTML = `<div class="gadget-emoji">${gadget.emoji}</div><div class="gadget-text"><strong>${gadget.brand}</strong><br>${gadget.model}</div>`;
-        card.onclick = (e) => { e.preventDefault(); selectGadget(gadget); };
+        card.id = `gadget-card-${gadget.id}`;
+        card.innerHTML = `<div class="gadget-emoji">${gadget.emoji}</div><div class="gadget-text"><strong>${gadget.brand}</strong><br>${gadget.model}</div><div class="gadget-qty" id="qty-${gadget.id}"></div>`;
+        card.onclick = (e) => { e.preventDefault(); selectGadgetForDetail(gadget); };
         grid.appendChild(card);
     });
 }
 
-function selectGadget(gadget) {
-    selectedGadget = gadget;
-    document.querySelectorAll('.gadget-card').forEach((c, i) => c.classList.toggle('active', GADGETS[i].id === gadget.id));
+function selectGadgetForDetail(gadget) {
+    currentGadget = gadget;
     
     document.getElementById('detail-emoji').textContent = gadget.emoji;
     document.getElementById('detail-name').textContent = gadget.name;
@@ -453,8 +471,67 @@ function selectGadget(gadget) {
     document.getElementById('pain-points-content').innerHTML = painHtml;
     
     document.getElementById('gadget-detail').classList.add('active');
-    document.querySelector('.qty-input').style.display = 'block';
-    document.getElementById('qty-label').textContent = `${gadget.name} 銷售數量`;
+    document.getElementById('current-qty').value = '0';
+    document.getElementById('qty-label').textContent = `${gadget.name} - 輸入銷售數量`;
+}
+
+function addGadgetToList() {
+    if (!currentGadget) { alert('❌ 請先選擇禮品'); return; }
+    
+    const qty = parseInt(document.getElementById('current-qty').value) || 0;
+    if (qty <= 0) { alert('❌ 請輸入正確數量'); return; }
+    
+    // 檢查係咪已經加過
+    const existing = selectedGadgets.find(g => g.id === currentGadget.id);
+    if (existing) {
+        existing.qty = qty; // 更新數量
+    } else {
+        selectedGadgets.push({
+            id: currentGadget.id,
+            name: currentGadget.name,
+            brand: currentGadget.brand,
+            model: currentGadget.model,
+            emoji: currentGadget.emoji,
+            qty: qty
+        });
+    }
+    
+    updateGadgetsList();
+    document.getElementById('current-qty').value = '0';
+}
+
+function updateGadgetsList() {
+    const listHtml = selectedGadgets.map((g, idx) => `
+        <div class="gadget-item">
+            <div class="gadget-item-info">
+                <div class="gadget-item-name">${g.emoji} ${g.brand} ${g.model}</div>
+                <div class="gadget-item-qty">數量: ${g.qty} 件</div>
+            </div>
+            <button type="button" class="remove-btn" onclick="removeGadgetFromList(${g.id})">🗑️ 移除</button>
+        </div>
+    `).join('');
+    
+    const listDiv = document.getElementById('gadgets-list');
+    listDiv.innerHTML = listHtml;
+    
+    // 更新卡片上嘅數量標籤
+    GADGETS.forEach(g => {
+        const selected = selectedGadgets.find(sg => sg.id === g.id);
+        const qtyLabel = document.getElementById(`qty-${g.id}`);
+        if (selected) {
+            qtyLabel.textContent = `✅ x${selected.qty}`;
+        } else {
+            qtyLabel.textContent = '';
+        }
+    });
+    
+    // 顯示/隱藏清單區域
+    document.getElementById('selected-list').style.display = selectedGadgets.length > 0 ? 'block' : 'none';
+}
+
+function removeGadgetFromList(id) {
+    selectedGadgets = selectedGadgets.filter(g => g.id !== id);
+    updateGadgetsList();
 }
 
 function handleLogin() {
@@ -482,7 +559,8 @@ function handleLogin() {
 
 function logout() {
     currentUser = null;
-    selectedGadget = null;
+    currentGadget = null;
+    selectedGadgets = [];
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('staff-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'none';
@@ -502,10 +580,12 @@ function submitStaffReport(e) {
     const adhoc1 = parseInt(document.getElementById('adhoc1').value) || 0;
     const adhoc2 = parseInt(document.getElementById('adhoc2').value) || 0;
     const adhoc3 = parseInt(document.getElementById('adhoc3').value) || 0;
-    const qty = parseInt(document.getElementById('gadget-qty').value) || 0;
     const notes = document.getElementById('notes').value;
     
-    const gadgetName = selectedGadget && qty > 0 ? `${selectedGadget.brand} ${selectedGadget.model} (x${qty})` : '無';
+    // 生成禮品銷售記錄（多件產品）
+    const gadgetsList = selectedGadgets.length > 0 
+        ? selectedGadgets.map(g => `${g.brand} ${g.model} (x${g.qty})`).join(' | ')
+        : '無';
     
     const now = new Date();
     const report = {
@@ -514,7 +594,7 @@ function submitStaffReport(e) {
         staff: currentUser.name,
         leader,
         cis, vas, adhoc1, adhoc2, adhoc3,
-        gadget: gadgetName,
+        gadgets: gadgetsList,
         notes
     };
     
@@ -525,9 +605,11 @@ function submitStaffReport(e) {
     setTimeout(() => document.getElementById('success-msg').classList.remove('show'), 3000);
     
     e.target.reset();
-    document.querySelectorAll('.gadget-card').forEach(c => c.classList.remove('active'));
     document.getElementById('gadget-detail').classList.remove('active');
-    selectedGadget = null;
+    document.getElementById('selected-list').style.display = 'none';
+    selectedGadgets = [];
+    initializeGadgets();
+    currentGadget = null;
 }
 
 function refreshAdminView() {
@@ -554,16 +636,16 @@ function refreshAdminView() {
     
     document.getElementById('no-data-msg').style.display = 'none';
     reports.slice().reverse().forEach(r => {
-        tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.staff}</td><td>${r.leader || '-'}</td><td>${r.cis}</td><td>${r.vas}</td><td>${r.adhoc1}</td><td>${r.adhoc2}</td><td>${r.adhoc3}</td><td>${r.gadget}</td><td>${r.notes}</td></tr>`;
+        tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.staff}</td><td>${r.leader || '-'}</td><td>${r.cis}</td><td>${r.vas}</td><td>${r.adhoc1}</td><td>${r.adhoc2}</td><td>${r.adhoc3}</td><td>${r.gadgets}</td><td>${r.notes}</td></tr>`;
     });
 }
 
 function exportToCSV() {
     if (reports.length === 0) { alert('❌ 沒有數據'); return; }
     
-    let csv = '日期,時間,同事,Leader,CIS,VAS,2500M,Router,PCD NEW,禮品,備註\n';
+    let csv = '日期,時間,同事,Leader,CIS,VAS,2500M,Router,PCD NEW,禮品銷售,備註\n';
     reports.forEach(r => {
-        csv += `${r.date},${r.time || ''},${r.staff},${r.leader || ''},${r.cis},${r.vas},${r.adhoc1},${r.adhoc2},${r.adhoc3},"${r.gadget}","${r.notes}"\n`;
+        csv += `${r.date},${r.time || ''},${r.staff},${r.leader || ''},${r.cis},${r.vas},${r.adhoc1},${r.adhoc2},${r.adhoc3},"${r.gadgets}","${r.notes}"\n`;
     });
     
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
