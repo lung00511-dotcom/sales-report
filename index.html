@@ -179,7 +179,7 @@
                 
                 <button type="submit" class="submit-btn">✅ 提交報數</button>
             </form>
-            <div id="success-msg" class="success-alert">✅ 報數已成功保存並同步到 Google Drive！</div>
+            <div id="success-msg" class="success-alert">✅ 報數已成功保存！</div>
         </div>
     </div>
 </div>
@@ -189,7 +189,6 @@
     <div class="navbar">
         <h1>📊 管理員儀表板</h1>
         <div class="navbar-actions">
-            <button class="sync-btn" onclick="syncToGoogle()">☁️ 同步到 Google</button>
             <button class="logout-btn" onclick="logout()">🚪 登出</button>
         </div>
     </div>
@@ -201,7 +200,6 @@
                 <h3>📈 銷售統計表</h3>
                 <div class="export-btns">
                     <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
-                    <button class="export-btn" onclick="syncToGoogle()">☁️ 同步到 Google</button>
                 </div>
             </div>
             <div style="overflow-x: auto;">
@@ -328,18 +326,19 @@ const GADGETS = [
         brandDesc: "inno3C - 創新3C科技品牌",
         srp: "$3,596",
         specs: {
-            "包含": "主機 + 2年份濾芯（8個）",
+            "包含": "主機 (內置1個濾芯) + 額外濾芯 1個",
             "機身規格": "同 i-WD25 一模一樣",
-            "濾芯壽命": "每個3-6個月",
-            "節省": "一次過鎖定2年價格，無後顧之憂",
-            "適合": "企業團購、大家庭、送禮首選",
-            "保修": "2年主機 + 終身客服支援"
+            "濾芯壽命": "每個3-6個月，內置 + 額外共2個可用6個月",
+            "相當於": "買機送濾芯，無額外成本",
+            "優勢": "到手即用，毋須再買濾芯",
+            "保修": "2年主機 + 終身客服支援",
+            "最適合": "送禮、企業團購、重視便利性"
         },
         painPoints: [
-            { pain: "唔知幾時要換濾芯，成日要記", solution: "套裝送2年份，3年內 zero 煩惱" },
-            { pain: "買咗機又要擔心買濾芯貴", solution: "一次過鎖定價格，唔洗等漲價" },
-            { pain: "送禮怕收禮人日後要自己搞", solution: "送濾芯一起，禮物受用3年！" },
-            { pain: "企業團購，怕員工濾芯亂放", solution: "套裝有管理系統，統一換芯" }
+            { pain: "買咗機又要擔心後續濾芯費用", solution: "額外贈送1個濾芯，6個月內完全無煩惱" },
+            { pain: "送禮怕收禮人日後自己搞濾芯", solution: "送到手已經包含2個濾芯，收禮人無負擔" },
+            { pain: "企業團購，怕員工濾芯管理亂", solution: "套裝模式清晰，員工容易管理" },
+            { pain: "唔知幾時要換濾芯", solution: "內置 + 額外共2個，6個月前完全無須擔心" }
         ]
     },
     {
@@ -424,14 +423,12 @@ function selectGadget(gadget) {
     document.getElementById('detail-model').textContent = gadget.model;
     document.getElementById('detail-srp').textContent = gadget.srp;
     
-    // 規格
     let specHtml = '';
     for (let [key, value] of Object.entries(gadget.specs)) {
         specHtml += `<div class="spec-item"><div class="spec-label">${key}</div><div class="spec-value">${value}</div></div>`;
     }
     document.getElementById('spec-grid').innerHTML = specHtml;
     
-    // Pain Points
     let painHtml = '';
     gadget.painPoints.forEach(item => {
         painHtml += `
@@ -568,10 +565,6 @@ function exportToCSV() {
     link.href = URL.createObjectURL(blob);
     link.download = `Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
-}
-
-function syncToGoogle() {
-    alert('📤 如已設定 Google Sheets API，數據會自動同步。\n\n請檢查：\n1. GOOGLE_SHEET_ID 係咪啱\n2. GOOGLE_API_KEY 係咪有效');
 }
 
 initializeGadgets();
