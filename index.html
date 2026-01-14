@@ -3,739 +3,817 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銷售報數平台</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>HKT Gadget Installment Offer - 產品評價</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f3f4f6; color: #1f2937; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        .navbar { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; }
-        .navbar h1 { font-size: 1.4rem; font-weight: bold; }
-        .navbar-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        .logout-btn, .sync-btn { background: rgba(255,255,255,0.25); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-        .sync-btn { background: rgba(100,255,100,0.3); }
-        .sync-btn:hover { background: rgba(100,255,100,0.5); }
-        .sync-status { color: white; font-size: 0.9rem; padding: 0.5rem 1rem; }
+        body {
+            font-family: 'Arial', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f2744 0%, #1a3f5c 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #1a2f47;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 1px solid rgba(70, 130, 180, 0.3);
+        }
         
-        #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); padding: 1rem; }
-        .login-box { background: white; padding: 3rem; border-radius: 12px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-        .login-box h2 { font-size: 2.2rem; color: #3b82f4; margin-bottom: 1rem; }
-        .login-input { width: 100%; padding: 0.95rem; margin-bottom: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; }
-        .login-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f4 0%, #1e40af 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .header {
+            background: linear-gradient(135deg, #1a3a52 0%, #0f2744 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 3px solid #4682b4;
+        }
         
-        #staff-screen, #admin-screen { display: none; }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #87ceeb;
+        }
         
-        .form-card { background: white; padding: 2.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .form-card h2 { font-size: 1.3rem; color: #3b82f4; margin-bottom: 1.5rem; }
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-weight: bold; margin-bottom: 0.5rem; }
-        .form-group input, .form-group textarea, .form-group select { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            color: #b0c4de;
+        }
         
-        .gadgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
-        .gadget-card { padding: 1rem; background: white; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
-        .gadget-card:hover { border-color: #3b82f4; background: #eff6ff; }
-        .gadget-card.selected { background: #3b82f4; color: white; border-color: #1e40af; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        .gadget-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .gadget-text { font-size: 0.75rem; line-height: 1.2; }
-        .gadget-qty { font-size: 0.7rem; background: rgba(0,0,0,0.1); padding: 0.3rem 0.6rem; border-radius: 4px; margin-top: 0.5rem; }
+        .product-section {
+            padding: 40px 30px;
+            border-bottom: 1px solid rgba(70, 130, 180, 0.2);
+        }
         
-        .gadget-detail { display: none; background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #3b82f4; }
-        .gadget-detail.active { display: block; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .product-section:last-child {
+            border-bottom: none;
+        }
         
-        .detail-header { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
-        .detail-emoji { font-size: 4rem; min-width: 80px; }
-        .detail-info h3 { color: #3b82f4; font-size: 1.2rem; margin-bottom: 0.3rem; font-weight: bold; }
-        .detail-brand { color: #ef4444; font-weight: bold; margin-bottom: 0.5rem; }
-        .spec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; background: white; padding: 1rem; border-radius: 6px; }
-        .spec-item { border-left: 3px solid #3b82f4; padding-left: 0.8rem; }
-        .spec-label { font-weight: bold; color: #3b82f4; font-size: 0.9rem; }
-        .spec-value { color: #374151; font-size: 0.95rem; margin-top: 0.2rem; }
+        .product-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4682b4;
+            padding-bottom: 15px;
+        }
         
-        .pain-points { background: white; padding: 1rem; border-radius: 6px; margin-top: 1rem; }
-        .pain-points h4 { color: #1e40af; margin-bottom: 0.8rem; }
-        .pain-point-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.8rem; }
-        .pain-point-row:last-child { border-bottom: none; }
-        .pain-point-left { background: #fef2f2; padding: 0.8rem; border-radius: 4px; }
-        .pain-point-right { background: #f0fdf4; padding: 0.8rem; border-radius: 4px; }
-        .pain-title { font-weight: bold; color: #ef4444; margin-bottom: 0.3rem; font-size: 0.9rem; }
-        .solution-title { font-weight: bold; color: #10b981; margin-bottom: 0.3rem; font-size: 0.9rem; }
-        .pain-text, .solution-text { font-size: 0.9rem; line-height: 1.5; }
+        .product-number {
+            background: linear-gradient(135deg, #4682b4 0%, #1e90ff 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
         
-        .qty-input { background: white; padding: 1.2rem; border-radius: 8px; border-left: 3px solid #10b981; margin-bottom: 1rem; }
-        .qty-input label { font-weight: bold; color: #10b981; margin-bottom: 0.5rem; }
-        .qty-input input { padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; }
-        .add-gadget-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .add-gadget-btn:hover { opacity: 0.9; }
+        .product-title {
+            flex: 1;
+        }
         
-        .selected-gadgets { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .selected-gadgets h3 { color: #3b82f4; margin-bottom: 1rem; font-size: 1.1rem; }
-        .gadget-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f9fafb; border-radius: 6px; margin-bottom: 0.8rem; border-left: 3px solid #3b82f4; }
-        .gadget-item-info { flex: 1; }
-        .gadget-item-name { font-weight: bold; color: #1f2937; }
-        .gadget-item-qty { color: #6b7280; font-size: 0.9rem; }
-        .remove-btn { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .remove-btn:hover { opacity: 0.9; }
+        .product-title h2 {
+            font-size: 24px;
+            color: #87ceeb;
+            margin-bottom: 5px;
+        }
         
-        .submit-btn { width: 100%; padding: 1.1rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 1.5rem; }
-        .success-alert { display: none; padding: 1rem; background: #d1fae5; color: #065f46; border-radius: 8px; margin-top: 1rem; text-align: center; font-weight: bold; }
-        .success-alert.show { display: block; }
+        .price-badge {
+            background: linear-gradient(135deg, #4682b4 0%, #1e90ff 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-box { background: white; padding: 1.5rem; border-radius: 8px; border-top: 4px solid #3b82f4; text-align: center; }
-        .stat-value { font-size: 2.4rem; font-weight: bold; color: #3b82f4; }
+        .product-image-container {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(70, 130, 180, 0.2);
+        }
         
-        .table-card { background: white; border-radius: 8px; overflow: hidden; }
-        .table-header { background: #f3f4f6; padding: 1rem 1.5rem; display: flex; justify-content: space-between; }
-        .export-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .export-btn { padding: 0.8rem 1rem; background: #3b82f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .product-image {
+            max-width: 250px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 12px;
+        }
         
-        table { width: 100%; border-collapse: collapse; }
-        table th { background: #f9fafb; padding: 1rem; text-align: left; font-weight: bold; border-bottom: 2px solid #e5e7eb; font-size: 0.9rem; }
-        table td { padding: 0.9rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #4682b4 0%, #1e90ff 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(70, 130, 180, 0.4);
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-box {
+            background: rgba(70, 130, 180, 0.08);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4682b4;
+        }
+        
+        .section-box h3 {
+            color: #87ceeb;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .review-item {
+            background: rgba(26, 47, 71, 0.8);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4682b4;
+        }
+        
+        .review-item p {
+            color: #b0c4de;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .review-item strong {
+            color: #87ceeb;
+        }
+        
+        .rating {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .pain-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .pain-point-icon {
+            background: linear-gradient(135deg, #4682b4 0%, #1e90ff 100%);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .pain-point-text {
+            color: #b0c4de;
+            font-size: 14px;
+        }
+        
+        .reason-list {
+            list-style: none;
+        }
+        
+        .reason-list li {
+            color: #b0c4de;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .reason-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4682b4;
+            font-weight: bold;
+        }
+        
+        .selling-script {
+            background: rgba(70, 130, 180, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #1e90ff;
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+        
+        .selling-script h3 {
+            color: #87ceeb;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        
+        .selling-script p {
+            color: #b0c4de;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .footer {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px 30px;
+            text-align: center;
+            color: #708090;
+            font-size: 12px;
+            border-top: 1px solid rgba(70, 130, 180, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .product-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .product-image {
+                max-width: 200px;
+            }
+        }
     </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div id="login-screen">
-    <div class="login-box">
-        <h2>📊 銷售報數平台</h2>
-        <p>Gadget Installment Offer</p>
-        <input type="text" id="user-name" class="login-input" placeholder="輸入名字" />
-        <select id="user-role" class="login-input">
-            <option value="">選擇身份</option>
-            <option value="staff">同事 (報數)</option>
-            <option value="admin">管理員 (查看統計)</option>
-        </select>
-        <div id="admin-pass-section" style="display: none;">
-            <input type="password" id="admin-pass" class="login-input" placeholder="輸入密碼" />
-        </div>
-        <button class="login-btn" onclick="handleLogin()">🔓 登入</button>
-    </div>
-</div>
-
-<!-- STAFF SCREEN -->
-<div id="staff-screen">
-    <div class="navbar">
-        <h1>📋 同事報數表單</h1>
-        <div class="navbar-actions">
-            <div>
-                <span id="staff-name">同事: -</span> | 
-                <span id="staff-date">日期: -</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">🚪 登出</button>
-        </div>
-    </div>
     <div class="container">
-        <div class="form-card">
-            <h2>📝 填寫今日銷售數據</h2>
-            <form onsubmit="submitStaffReport(event)">
-                <h3 style="margin-bottom: 1rem; color: #3b82f4;">🎁 禮品銷售 (點擊查看詳情 + 選擇數量)</h3>
-                <div class="gadgets-grid" id="gadgets-grid"></div>
-                
-                <div id="gadget-detail" class="gadget-detail">
-                    <div class="detail-header">
-                        <div class="detail-emoji" id="detail-emoji">📦</div>
-                        <div class="detail-info" style="flex: 1;">
-                            <h3 id="detail-name"></h3>
-                            <div class="detail-brand" id="detail-brand"></div>
-                            <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 1rem;" id="detail-brand-desc"></p>
-                            <p><strong>🔧 型號:</strong> <span id="detail-model"></span></p>
-                            <p><strong>💰 SRP 原價:</strong> <span id="detail-srp" style="color: #ef4444; font-size: 1.1rem;"></span></p>
-                        </div>
-                    </div>
-                    
-                    <div class="spec-grid" id="spec-grid"></div>
-                    
-                    <div class="pain-points">
-                        <h4>💡 真實顧客 Pain Point & 解決方案</h4>
-                        <div id="pain-points-content"></div>
-                    </div>
-                    
-                    <div class="qty-input">
-                        <label for="current-qty" id="qty-label">輸入銷售數量</label>
-                        <input type="number" id="current-qty" min="0" value="0" />
-                        <button type="button" class="add-gadget-btn" onclick="addGadgetToList()" style="margin-top: 0.8rem; width: 100%;">➕ 加入清單</button>
-                    </div>
-                </div>
-                
-                <!-- 已選擇禮品清單 -->
-                <div id="selected-list" class="selected-gadgets" style="display: none;">
-                    <h3>✅ 已選擇禮品</h3>
-                    <div id="gadgets-list"></div>
-                </div>
-                
-                <h3 style="margin-top: 2rem; color: #3b82f4;">📊 銷售數據</h3>
-                <div class="form-row">
-                    <div class="form-group"><label>📱 CIS 訂單數</label><input type="number" id="cis" min="0" value="0" /></div>
-                    <div class="form-group"><label>➕ VAS 增值服務</label><input type="number" id="vas" min="0" value="0" /></div>
-                </div>
-                
-                <h3 style="color: #3b82f4;">👔 團隊資訊</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Leader</label>
-                        <select id="leader" required>
-                            <option value="">選擇 Leader</option>
-                            <option value="Nelson Wong">Nelson Wong</option>
-                            <option value="Billy Lam">Billy Lam</option>
-                            <option value="Timothy Chan">Timothy Chan</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <h3 style="color: #3b82f4;">📱 Ad-Hoc VAS</h3>
-                <div class="form-row">
-                    <div class="form-group"><label>2500M</label><input type="number" id="adhoc1" min="0" value="0" /></div>
-                    <div class="form-group"><label>Router</label><input type="number" id="adhoc2" min="0" value="0" /></div>
-                    <div class="form-group"><label>PCD NEW</label><input type="number" id="adhoc3" min="0" value="0" /></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>📌 備註 (選填)</label>
-                    <textarea id="notes" style="min-height: 80px;"></textarea>
-                </div>
-                
-                <button type="submit" class="submit-btn">✅ 提交報數</button>
-            </form>
-            <div id="success-msg" class="success-alert">✅ 報數已成功保存！</div>
+        <div class="header">
+            <h1>🎁 HKT Gadget Installment Offer</h1>
+            <p>7件產品評價 + Pain Point + 購買理由 + Selling Script</p>
         </div>
-    </div>
-</div>
-
-<!-- ADMIN SCREEN -->
-<div id="admin-screen">
-    <div class="navbar">
-        <h1>📊 管理員儀表板</h1>
-        <div class="navbar-actions">
-            <div class="sync-status" id="sync-status"></div>
-            <button class="sync-btn" onclick="syncToGoogleSheets()">☁️ 同步到 Google Sheets</button>
-            <button class="export-btn" onclick="exportToCSV()">📥 下載 CSV</button>
-            <button class="logout-btn" onclick="logout()">🚪 登出</button>
-        </div>
-    </div>
-    <div class="container">
-        <div class="stats-grid" id="stats-grid"></div>
         
-        <div class="table-card">
-            <div class="table-header">
-                <h3>📈 銷售統計表</h3>
+        <!-- 產品1: inno3C i-GS1 掛燙機 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">1</div>
+                <div class="product-title">
+                    <h2>inno3C i-GS1 掛燙機</h2>
+                    <span class="price-badge">HK$398</span>
+                </div>
             </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>日期</th><th>同事</th><th>Leader</th><th>CIS</th><th>VAS</th><th>2500M</th><th>Router</th><th>PCD NEW</th><th>禮品銷售</th><th>備註</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768092921/search_images/51217a9f46a5629dd72174b6d93a5fad068477fb.jpg" alt="inno3C i-GS1 掛燙機" class="product-image">
+                <br>
+                <a href="https://www.yohohongkong.com/zh-hk/product/282815" target="_blank" class="product-link">🔗 查看產品</a>
             </div>
-            <div id="no-data-msg" style="text-align: center; padding: 3rem; color: #999;">暫無數據</div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>陳女士 (上班族)</strong></p>
+                        <p>「用咗i-GS1之後，衣服皺摺2分鐘搞掂，出差再唔洗怕著皺嘅衣服。最重要係全球電壓，去日本出差都可以帶，好方便。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>李先生 (經理)</strong></p>
+                        <p>「之前用舊熨斗成日要收好，呢個掛燙機細身，放屋企唔佔位。而且高溫可以殺菌，家人都安心。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">衣服皺摺，出門前要急火火燙</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">出差帶熨斗太麻煩，行李擠迫</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">舊熨斗質量差，半年就故障</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">工作形象差，著皺衣服見客戶</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>2-3分鐘快速撫平任何皺摺（比傳統熨斗快3-4倍）</li>
+                        <li>100-240V全球電壓（出差日本、英國無問題）</li>
+                        <li>高溫殺菌殺螨（家人衣著更衛生）</li>
+                        <li>細身輕巧（放屋企唔佔位，行李箱fit到）</li>
+                        <li>1年保養 + CE認證（用得放心）</li>
+                        <li>隨時保持整潔（工作形象加分）</li>
+                    </ul>
+                </div>
+                
+                <div class="selling-script full-width">
+                    <h3>💬 Selling Script</h3>
+                    <p>「你同我地升級返個服務計劃，我地服務計劃會有埋inno3C i-GS1掛燙機俾你架喇！我自己都試過出門前係衣服拎件衫出黎好多摺痕，想燙一燙先出門，但係發覺要去騎樓拎燙衫板，又要搵個位出黎擺陣，都好麻煩，都求求其其出門算。依加呢隻掛燙機，掛起即燙，除皺仲快過傳統既熨斗3、4倍。即刻同你登記埋啦！」</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品2: inno3C i-FD8 風筒 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">2</div>
+                <div class="product-title">
+                    <h2>inno3C i-FD8 負離子高速風筒</h2>
+                    <span class="price-badge">HK$498</span>
+                </div>
+            </div>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768383106/search_images/07ea2acad97ecc1be82c70d58d610a9e5e02f1ae.jpg" alt="inno3C i-FD8 風筒" class="product-image">
+                <br>
+                <a href="https://www.inno3c.com.hk" target="_blank" class="product-link">🔗 查看產品</a>
+            </div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>黃太太 (家庭主婦)</strong></p>
+                        <p>「吹頭時間由10分鐘減到5分鐘，最重要係靜音，早上唔洗怕驚醒家人。而且頭髮變靚咗，去salon剪頭髮hair stylist都讚。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>王小姐 (上班族)</strong></p>
+                        <p>「負離子功能真係有用，吹完頭髮唔會毛躁，省返理髮費。1400W馬達勁到飆，有冷熱風交替保護頭皮。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">每朝吹頭要10分鐘，上班遲到</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">舊風筒太嘈，驚醒屋企人</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">吹完頭髮毛躁分叉，下次理髮要洗剪</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">馬達弱，頭皮受熱傷害</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>1400W馬達 + 100,000rpm轉速（吹頭時間減半）</li>
+                        <li>5分鐘快速乾髮（每朝省5分鐘時間）</li>
+                        <li>負離子護髮（頭髮變靚，省理髮費）</li>
+                        <li>靜音設計（早上無需驚醒家人）</li>
+                        <li>冷熱風交替（保護頭皮溫度，髮質更健康）</li>
+                        <li>摺疊輕巧（出差行李箱fit到）</li>
+                    </ul>
+                </div>
+                
+                <div class="selling-script full-width">
+                    <h3>💬 Selling Script</h3>
+                    <p>「陳生，你依家同我地升級左你現時用緊既服務計劃，我地會有隻inno3C i-FD8摺疊負離子高速風筒俾埋你架。隻風筒好正，唔似得舊風筒咁，吹一陣有陣臭膠味。另外仲非常輕盈，唔洗好似舉啞鈴咁。即刻同你登記埋啦！」</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品3: Smartech SV-8178 吸塵機 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">3</div>
+                <div class="product-title">
+                    <h2>Smartech SV-8178 無線HEPA吸塵機</h2>
+                    <span class="price-badge">HK$1,498</span>
+                </div>
+            </div>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768092539/search_images/220c6bad44a57e54ab6561e715d7ae7329fe1bc2.jpg" alt="Smartech SV-8178 吸塵機" class="product-image">
+                <br>
+                <a href="https://shop.theclub.com.hk" target="_blank" class="product-link">🔗 查看產品</a>
+            </div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>劉媽媽 (退休人士)</strong></p>
+                        <p>「屋企灰塵明顯減少，小朋友咳嗽次數少咗好多。HEPA濾網真係有用，99.97%過濾細菌病毒，飲食都更放心。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>陶先生 (有寵物狗)</strong></p>
+                        <p>「無線設計好方便，清潔時間減半。吸力勁到飆，寵物毛髮輕鬆清走。1年保養，故障直接聯絡廠商。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">屋企灰塵多，家人經常咳嗽</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">舊吸塵機吸力差，清晒屋企要兩小時</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">倒塵時揚起灰塵，房間污染</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">無保養，故障要自己搵人修</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>HEPA H13濾網（99.97%過濾細菌病毒）</li>
+                        <li>雙層過濾（屋企空氣質素大幅改善）</li>
+                        <li>家人健康保障（特別係小朋友呼吸道）</li>
+                        <li>強勁馬達（地板清到光淨淨）</li>
+                        <li>高速12分鐘/低速20分鐘（3房廳夠清一次）</li>
+                        <li>易拆式水洗塵杯（倒塵無灰塵揚起）</li>
+                        <li>1年保養 + 客服電話（故障有人幫）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品4: inno3C i-WD25 飲水機 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">4</div>
+                <div class="product-title">
+                    <h2>inno3C i-WD25 即熱超濾飲水機</h2>
+                    <span class="price-badge">HK$2,998</span>
+                </div>
+            </div>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768383107/search_images/bec6f3a054e4e35b678617cdadc088cb552d4843.jpg" alt="inno3C i-WD25 飲水機" class="product-image">
+                <br>
+                <a href="https://www.inno3c.com.hk" target="_blank" class="product-link">🔗 查看產品</a>
+            </div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>周先生 (家庭主任)</strong></p>
+                        <p>「最鐘意3秒即熱，唔洗每朝燒水。UV-C殺菌 + 4重超濾，全家都可以安心飲。濾芯一年先換一次，維護超簡單。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>鍾太太 (上班族媽媽)</strong></p>
+                        <p>「全港最細尺寸，廚房擺得住。細個仔飲咗i-WD25的水之後，腹瀉次數明顯減少。日本TORAY濾芯，飲得到品質。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">每朝起床要燒水，浪費時間</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">飲水安全擔憂，家人容易腹瀉</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">舊飲水機太大，香港屋企擺唔落</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">濾芯貴又要常換，成本高</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>3秒即熱（比燒水壺快4倍，每朝省5分鐘）</li>
+                        <li>4重超濾+UV-C殺菌（飲水安全有保證）</li>
+                        <li>全港最細尺寸（廚房/房間都fit到）</li>
+                        <li>日本東麗TORAY濾芯（高質量，1500L濾水量約1年先換）</li>
+                        <li>13種溫度調節（45-100度隨心調）</li>
+                        <li>家人健康長期保障（特別係小朋友腸道健康）</li>
+                        <li>長期濾芯費用平（一年費用比傳統飲水機平50%）</li>
+                    </ul>
+                </div>
+                
+                <div class="selling-script full-width">
+                    <h3>💬 Selling Script</h3>
+                    <p>「你依家同我地升級左你現時用緊既舊服務計劃，我地會有部inno3C i-WD25即熱超濾飲水機俾埋你架。部機有3秒即熱設計，有時想煮個麵食下又唔係再翻煲『千年水』。啲水一煮又煮都唔係咁健康啦。部機夠哂細，打橫擺先係用37CM，4重過濾，行埋UVC殺菌，大人細腸道都健康啲啦！」</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品5: i-WD25 套裝 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">5</div>
+                <div class="product-title">
+                    <h2>inno3C i-WD25 + 濾芯套裝</h2>
+                    <span class="price-badge">HK$3,596</span>
+                </div>
+            </div>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768383108/search_images/f47248272c2a0b2985b104878b531455cdfd5f05.jpg" alt="inno3C i-WD25 套裝" class="product-image">
+                <br>
+                <a href="https://www.inno3c.com.hk" target="_blank" class="product-link">🔗 查看產品</a>
+            </div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>黃女士 (長期用戶)</strong></p>
+                        <p>「買套裝版最化算，已經包咗2個濾芯。18個月內完全無需擔心濾芯問題。心理上好放心，知道幾時要換芯。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>陳先生 (家有2部飲水機)</strong></p>
+                        <p>「買套裝有兩個濾芯，一個用緊一個備用。如果屋企有其他人都用i-WD25，濾芯仲可以送人。長期成本最平。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">擔心濾芯成本太高</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">唔知幾時要換濾芯，突然冇貨</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">臨時要買濾芯，要等shipping麻煩</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">濾芯買唔到，廚房冇飲水機用</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>一次過買齊機器+2個濾芯（18個月無需重購）</li>
+                        <li>預先備用濾芯（無需急時搵貨）</li>
+                        <li>平均分攤成本（每月濾芯費用更平）</li>
+                        <li>心理安心（知道幾時要換，無surprise）</li>
+                        <li>可以送贈（有親友同用i-WD25可互相送濾芯）</li>
+                        <li>長期飲水品質穩定（家人健康長期保證）</li>
+                        <li>整體計起來最化算（省時間+省金錢+省心）</li>
+                    </ul>
+                </div>
+                
+                <div class="selling-script full-width">
+                    <h3>💬 Selling Script</h3>
+                    <p>「你依家同我地升級左你現時用緊既舊服務計劃，我地會有部inno3C i-WD25即熱超濾飲水機俾埋你架。部機有3秒即熱設計，有時想煮個麵食下又唔係再翻煲『千年水』。啲水一煮又煮都唔係咁健康啦。部機夠哂細，打橫擺先係用37CM，4重過濾，行埋UVC殺菌，大人細腸道都健康啲啦！你依家升級埋我地，除左本身主機內置既濾心外，仲有多一支濾心俾埋你架！」</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品6: Jelly Fish 喇叭 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">6</div>
+                <div class="product-title">
+                    <h2>Connecty Jelly Fish 磁吸藍牙喇叭</h2>
+                    <span class="price-badge">HK$368</span>
+                </div>
+            </div>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768383107/search_images/d4dc3e56b46612d70d6adb811acccd269de23ab7.jpg" alt="Connecty Jelly Fish 喇叭" class="product-image">
+                <br>
+                <a href="https://www.connecty.hk" target="_blank" class="product-link">🔗 查看產品</a>
+            </div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>梁先生 (聚會常客)</strong></p>
+                        <p>「派對用Jelly Fish音質真係靚，低音有力。NFC功能超方便，手機一碰就播歌。設計高級感十足，朋友都問邊度買。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>何女士 (居家辦公)</strong></p>
+                        <p>「Work from home開視訊會議，Jelly Fish高清收音咪效果好，同事都讚聽到好清楚。設計靚，擺房間都襯。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">派對靠手機喇叭，音質差</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">藍牙配對麻煩，每次都要重連</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">會議喇叭收音差，同事聽唔清楚</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">舊喇叭設計醜，擺房間唔靚</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>低音渾厚、中高音清晰（聽歌有feel）</li>
+                        <li>NFC一觸即連（手機輕觸自動配對秒播歌）</li>
+                        <li>派對氣氛升級（2部可互聯，音效更澎湃）</li>
+                        <li>多種燈光模式（配合音樂律動）</li>
+                        <li>高清收音咪（工作會議更專業）</li>
+                        <li>磁吸設計（可吸附手機邊聽歌邊查資料）</li>
+                        <li>社交加分（設計高級感，朋友都想要）</li>
+                    </ul>
+                </div>
+                
+                <div class="selling-script full-width">
+                    <h3>💬 Selling Script</h3>
+                    <p>「你依家同我地升級左你現時用緊既舊服務計劃，我地會有隻Connecty Jelly Fish磁吸藍牙喇叭俾埋你架。隻喇叭好正，唔似得舊喇叭咁，行下下街唔見左，趺左都唔咩咩事。仲有啊，充電寶呢D老化左都可大可小架。我自己都試過舊喇叭擺屋企開視像會議收音唔咁得，同事聽唔清楚。呢隻高音甜、中音準、低音勁，高級感十足，無論係屋企開視像會議收音好D，拎去戶外露營又得。最正係佢行NFC拍一拍就連，咁就唔洗帶幾條線駁喇叭咁辛苦啦。依家即同你登記啦！」</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品7: i-3C5M2 充電寶 -->
+        <div class="product-section">
+            <div class="product-header">
+                <div class="product-number">7</div>
+                <div class="product-title">
+                    <h2>inno3C i-3C5M2 Qi2磁吸充電寶</h2>
+                    <span class="price-badge">HK$238-368</span>
+                </div>
+            </div>
+            
+            <div class="product-image-container">
+                <img src="https://pplx-res.cloudinary.com/image/upload/v1768383107/search_images/4b98cd9fd8ed458c98964be96a4ff0b501f40ed7.jpg" alt="inno3C i-3C5M2 充電寶" class="product-image">
+                <br>
+                <a href="https://www.inno3c.com.hk" target="_blank" class="product-link">🔗 查看產品</a>
+            </div>
+            
+            <div class="content-grid">
+                <div class="section-box">
+                    <h3>📱 真實客人評價</h3>
+                    <div class="review-item">
+                        <p><strong>謝先生 (經常出差)</strong></p>
+                        <p>「出差必備！Qi2無線充電，吸住手機背後就開始充。最重要係3C認證，北上出國都冇問題，可以直接帶上飛機。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                    
+                    <div class="review-item">
+                        <p><strong>余女士 (旅遊發燒友)</strong></p>
+                        <p>「部機薄到可以放褲袋，出街無負擔。OLED屏幕清楚睇電量，計劃用電好方便。5000mAh容量夠充滿1.5部phone。」</p>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="section-box">
+                    <h3>😞 客人Pain Point</h3>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">1</div>
+                        <div class="pain-point-text">出差電量唔夠，要急著充電</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">2</div>
+                        <div class="pain-point-text">帶行動電源行李厚重，飛機艙位有限</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">3</div>
+                        <div class="pain-point-text">充電寶冇認證，上飛機被沒收浪費錢</div>
+                    </div>
+                    
+                    <div class="pain-point">
+                        <div class="pain-point-icon">4</div>
+                        <div class="pain-point-text">邊充電邊用手機要帶線，麻煩</div>
+                    </div>
+                </div>
+                
+                <div class="section-box full-width">
+                    <h3>✅ 為咩要買</h3>
+                    <ul class="reason-list">
+                        <li>Qi2無線快充（15W快速充電，5分鐘回復50%電量）</li>
+                        <li>磁吸設計（輕輕一拍吸住，邊充邊用無問題）</li>
+                        <li>3C認證（可以帶上飛機，北上出國無煩惱）</li>
+                        <li>5000mAh容量（可充滿1.5部iPhone）</li>
+                        <li>直通充電（邊充電源邊充手機，同時為2件設備充電）</li>
+                        <li>OLED屏幕（清楚睇電量，計劃用電無煩悶）</li>
+                        <li>纖薄設計（放褲袋無負擔，隨身攜帶方便）</li>
+                        <li>出差最佳伴侶（電量無憂，行李輕便）</li>
+                    </ul>
+                </div>
+                
+                <div class="selling-script full-width">
+                    <h3>💬 Selling Script</h3>
+                    <p>「你依家同我地升級左你現時用緊既舊服務計劃，我地會有隻inno3C磁吸充電寶俾埋你架。呢隻充電寶吸力夠哂勁，唔會好似其他咁行下下街唔見左，趺左都唔咩咩事。仲有啊，充電寶呢D老化左都可大可小架。我自己都試過舊充電寶擺屋企叉電唔記得拔線，返到去變左爆谷咁啊。呢隻仲有CCC認證，平日擺褲袋，去旅行又帶得上飛機。定期更換，依家即刻同你處理埋啦！」</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>HKT Gadget Installment Offer - 客人評價 + Pain Point + 購買理由 + Selling Script</p>
+            <p>更新日期：2026年1月14日 | 專業版本 (深藍主題) | 老闆版本</p>
         </div>
     </div>
-</div>
-
-<script>
-const ADMIN_PASSWORD = "admin2024";
-// ⚠️ 改成你嘅 Google Sheets API 資訊
-const GOOGLE_SHEET_ID = "1i4BQoxepAJYA_LtLcc-vsClhoVWwPmfA6coU-SNaGw8";
-const GOOGLE_API_KEY = "AIzaSyAoaREbhHFto0z4RoJaylmnJi06sOEj8A4";
-
-const GADGETS = [
-    {
-        id: 0,
-        emoji: "🔥",
-        name: "掛燙金球電壓手持掛燙機",
-        brand: "inno3C",
-        model: "i-GS1",
-        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器",
-        srp: "$598",
-        specs: {
-            "掛燙溫度": "70-85°C 恆溫",
-            "加熱時間": "30秒快速預熱",
-            "容水量": "80ml（可持續15分鐘）",
-            "線長": "1.5m",
-            "重量": "280g 輕過部手機",
-            "功率": "800W",
-            "保修": "2年"
-        },
-        painPoints: [
-            { pain: "出門趕時間，衫皺到不能出門", solution: "30秒即熱 + 一噴即平，冇時間洗衫都得" },
-            { pain: "傳統掛燙機好重好大，阻位", solution: "282g 細細隻，放屋企邊隻角都得" },
-            { pain: "高溫會傷衣料，燙到變殘", solution: "恆溫設計，棉、麻、真絲都適用" },
-            { pain: "經常要乾洗店，一次成蚊幾百蚊", solution: "買一次用足3年，年底已回本" }
-        ]
-    },
-    {
-        id: 1,
-        emoji: "💨",
-        name: "摺疊負離子高速風筒",
-        brand: "inno3C",
-        model: "i-FD8",
-        brandDesc: "inno3C - 創新3C科技品牌，專注於智能生活電器",
-        srp: "$698",
-        specs: {
-            "功率": "1800W 高效馬達",
-            "風速": "最高 65m/s 強檔",
-            "乾髮時間": "濕髮→半乾 只需3分鐘",
-            "負離子濃度": "3百萬 負離子/cm³（護髮級別）",
-            "溫度檔": "3檔溫度 + 冷風定型",
-            "重量": "420g 輕如羽毛",
-            "摺疊尺寸": "A5 紙大小（12x8x6cm）"
-        },
-        painPoints: [
-            { pain: "冬天濕髮會感冒，夏天吹到一身汗", solution: "3分鐘快速乾身，冬暖夏爽" },
-            { pain: "傳統風筒吹唔乾，頭髮毛躁打結", solution: "1800W 強勁 + 負離子鎖水，吹完比沙龍仲靚" },
-            { pain: "風筒好重好熱，舉到手酸", solution: "420g 輕如羽毛，冷風循環唔會燒手" },
-            { pain: "出差/去宿舍，行李已經滿", solution: "摺疊後A5大小，放背包都冇問題" }
-        ]
-    },
-    {
-        id: 2,
-        emoji: "🏠",
-        name: "智能無線HEPA旋風吸塵機",
-        brand: "Smartech",
-        model: "SV-8178",
-        brandDesc: "Smartech - 香港本地智能家電品牌",
-        srp: "$1,498",
-        specs: {
-            "吸力": "28kPa 業界領先",
-            "續航時間": "一次充電 35-40分鐘（足夠一層樓）",
-            "電池": "3000mAh 鋰電池（充3.5小時）",
-            "重量": "1.8kg（對比傳統3-5kg 輕半倍）",
-            "濾網": "HEPA 13級（過濾99.99%細菌病毒）",
-            "集塵容量": "0.7L",
-            "車尾箱模式": "✅ 洗完車直接吸乾淨"
-        },
-        painPoints: [
-            { pain: "有寵物，毛髮到處都係", solution: "專門設計寵物毛吸力，一吸即淨" },
-            { pain: "傳統吸塵機要牽尾線，到處卡住", solution: "無線設計，樓梯、廁所、車尾箱全能吸" },
-            { pain: "吸完塵易過敏，家裡空氣污濁", solution: "HEPA濾網淨化空氣，細菌病毒out" },
-            { pain: "女性用傳統吸塵機手臂酸痛", solution: "1.8kg 輕巧，握感舒適，30分鐘無問題" }
-        ]
-    },
-    {
-        id: 3,
-        emoji: "💧",
-        name: "即熱UV-C超濾飲水機",
-        brand: "inno3C",
-        model: "i-WD25",
-        brandDesc: "inno3C - 創新3C科技品牌，香港原廠研製",
-        srp: "$2,998",
-        specs: {
-            "過濾系統": "4重過濾 + UV-C紫外光殺菌",
-            "第1層": "日本東麗(TORAY)超濾 Ultra-Filtration",
-            "第2層": "活性碳纖維（去重金屬、氯氣、異味）",
-            "第3層": "Ag+銀離子（長效抑制細菌繁殖）",
-            "第4層": "隱藏UV-C紫外線（殺菌率99.99%）",
-            "即熱溫度": "13種調節 (45°C至96-100°C)",
-            "加熱速度": "只需3秒即出熱水",
-            "出水容量": "20種選擇（100ml至1200ml）",
-            "水箱容量": "3L手提式（全港最細、最適香港家居）",
-            "尺寸": "370×135×293mm",
-            "功率": "2000W",
-            "濾芯壽命": "1500L（約1年）",
-            "耗電": "25度/月（年電費$60，月省$40）"
-        },
-        painPoints: [
-            { pain: "每日燒水等到天荒地老，趕上班冇時間", solution: "3秒即熱（業界最快），早上起身倒杯就飲" },
-            { pain: "買樽裝水每月成幾百蚊，又環保污染", solution: "年電費$60，月省$40，遠低於樽裝水成本" },
-            { pain: "自來水有氯氣味，飲唔慣", solution: "活性碳纖維去氯，飲起來同蒸餾水咁純淨" },
-            { pain: "老人小朋友怕飲唔安全嘅水", solution: "UV-C + 3層殺菌，99.99%滅病菌，比醫院手術室更淨" }
-        ]
-    },
-    {
-        id: 4,
-        emoji: "⭐",
-        name: "即熱飲水機 + 超濾濾芯套裝",
-        brand: "inno3C",
-        model: "i-WD25 Bundle",
-        brandDesc: "inno3C - 創新3C科技品牌",
-        srp: "$3,596",
-        specs: {
-            "包含": "主機 (內置1個濾芯) + 額外濾芯 1個",
-            "4重過濾": "同 i-WD25 一模一樣",
-            "濾芯壽命": "每個1500L (3-6個月)，內置+額外共可用6個月",
-            "相當於": "買機送濾芯，無額外成本",
-            "優勢": "到手即用，毋須立即再買濾芯",
-            "保修": "2年主機 + 終身客服支援",
-            "最適合": "送禮、企業團購、重視便利性"
-        },
-        painPoints: [
-            { pain: "買咗機又要擔心後續濾芯費用", solution: "額外贈送1個濾芯，6個月內完全無煩惱" },
-            { pain: "送禮怕收禮人日後自己搞濾芯", solution: "送到手已經包含2個濾芯，收禮人無負擔" },
-            { pain: "企業團購，怕員工濾芯管理亂", solution: "套裝模式清晰，員工容易管理" },
-            { pain: "唔知幾時要換濾芯", solution: "內置 + 額外共2個，6個月前完全無須擔心" }
-        ]
-    },
-    {
-        id: 5,
-        emoji: "🔊",
-        name: "Jelly Fish 藍牙喇叭",
-        brand: "Jelly Fish",
-        model: "Bluetooth Speaker",
-        brandDesc: "Jelly Fish - 新興音樂科技品牌",
-        srp: "$368",
-        specs: {
-            "功率": "10W 高保真音效",
-            "頻率響應": "20Hz - 20kHz（全頻段）",
-            "續航時間": "30小時連續播放（待機500小時）",
-            "充電時間": "2小時",
-            "防水等級": "IPX7（浸水1米、30分鐘冇事）",
-            "重量": "280g",
-            "尺寸": "直徑8cm x 高10cm（易 carry）"
-        },
-        painPoints: [
-            { pain: "去海邊烤肉，手機放浪度冇聲", solution: "IPX7 防水，濺水冇事，獨立喇叭夠聲" },
-            { pain: "健身房租用喇叭要畀錢", solution: "帶上呢個喇叭，私人健身課冇問題" },
-            { pain: "宿舍舍友唔睬，一個人無氣氛", solution: "360度環繞音，間房變 party room" },
-            { pain: "派對要接客人歌，插線超麻煩", solution: "30小時續航，無線 free play" }
-        ]
-    },
-    {
-        id: 6,
-        emoji: "🔋",
-        name: "M0 OLED QI2 超薄磁吸無線充電寶",
-        brand: "inno3C",
-        model: "i-3C5M2",
-        brandDesc: "inno3C - 創新3C科技品牌",
-        srp: "$368",
-        specs: {
-            "容量": "5000mAh（一般手機1.2倍）",
-            "尺寸": "厚度只有 4mm（信用卡厚度！）",
-            "重量": "125g（半部 iPhone 重）",
-            "無線輸出": "15W Qi2 標準（磁吸自動對齊）",
-            "有線輸出": "USB-C 15W + USB-A 5W 雙輸出",
-            "快充時間": "15分鐘快充50%（救急用）",
-            "磁吸力": "強力N52磁石（唔會掉）"
-        },
-        painPoints: [
-            { pain: "出門手機無電，找充電線超麻煩", solution: "磁吸即啲即有電，冇線乜嘢煩惱" },
-            { pain: "充電線成日斷掉，重複買浪費", solution: "無線磁吸永遠用到爛" },
-            { pain: "攞出背包要整理線纏纏", solution: "4mm 卡厚度，平放背包角落" },
-            { pain: "開會/見客要玩手機，線會掉", solution: "磁吸牢牢貼實，完全唔洗擔心" }
-        ]
-    }
-];
-
-let currentUser = null;
-let currentGadget = null;
-let selectedGadgets = [];
-let reports = JSON.parse(localStorage.getItem('sales_reports')) || [];
-
-document.getElementById('user-role').addEventListener('change', function() {
-    document.getElementById('admin-pass-section').style.display = this.value === 'admin' ? 'block' : 'none';
-});
-
-function initializeGadgets() {
-    const grid = document.getElementById('gadgets-grid');
-    grid.innerHTML = '';
-    GADGETS.forEach(gadget => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'gadget-card';
-        card.id = `gadget-card-${gadget.id}`;
-        card.innerHTML = `<div class="gadget-emoji">${gadget.emoji}</div><div class="gadget-text"><strong>${gadget.brand}</strong><br>${gadget.model}</div><div class="gadget-qty" id="qty-${gadget.id}"></div>`;
-        card.onclick = (e) => { e.preventDefault(); selectGadgetForDetail(gadget); };
-        grid.appendChild(card);
-    });
-}
-
-function selectGadgetForDetail(gadget) {
-    currentGadget = gadget;
-    
-    document.getElementById('detail-emoji').textContent = gadget.emoji;
-    document.getElementById('detail-name').textContent = gadget.name;
-    document.getElementById('detail-brand').textContent = gadget.brand;
-    document.getElementById('detail-brand-desc').textContent = gadget.brandDesc;
-    document.getElementById('detail-model').textContent = gadget.model;
-    document.getElementById('detail-srp').textContent = gadget.srp;
-    
-    let specHtml = '';
-    for (let [key, value] of Object.entries(gadget.specs)) {
-        specHtml += `<div class="spec-item"><div class="spec-label">${key}</div><div class="spec-value">${value}</div></div>`;
-    }
-    document.getElementById('spec-grid').innerHTML = specHtml;
-    
-    let painHtml = '';
-    gadget.painPoints.forEach(item => {
-        painHtml += `
-            <div class="pain-point-row">
-                <div class="pain-point-left">
-                    <div class="pain-title">❌ 問題</div>
-                    <div class="pain-text">${item.pain}</div>
-                </div>
-                <div class="pain-point-right">
-                    <div class="solution-title">✅ 解決</div>
-                    <div class="solution-text">${item.solution}</div>
-                </div>
-            </div>
-        `;
-    });
-    document.getElementById('pain-points-content').innerHTML = painHtml;
-    
-    document.getElementById('gadget-detail').classList.add('active');
-    document.getElementById('current-qty').value = '0';
-    document.getElementById('qty-label').textContent = `${gadget.name} - 輸入銷售數量`;
-}
-
-function addGadgetToList() {
-    if (!currentGadget) { alert('❌ 請先選擇禮品'); return; }
-    
-    const qty = parseInt(document.getElementById('current-qty').value) || 0;
-    if (qty <= 0) { alert('❌ 請輸入正確數量'); return; }
-    
-    const existing = selectedGadgets.find(g => g.id === currentGadget.id);
-    if (existing) {
-        existing.qty = qty;
-    } else {
-        selectedGadgets.push({
-            id: currentGadget.id,
-            name: currentGadget.name,
-            brand: currentGadget.brand,
-            model: currentGadget.model,
-            emoji: currentGadget.emoji,
-            qty: qty
-        });
-    }
-    
-    updateGadgetsList();
-    document.getElementById('current-qty').value = '0';
-}
-
-function updateGadgetsList() {
-    const listHtml = selectedGadgets.map((g, idx) => `
-        <div class="gadget-item">
-            <div class="gadget-item-info">
-                <div class="gadget-item-name">${g.emoji} ${g.brand} ${g.model}</div>
-                <div class="gadget-item-qty">數量: ${g.qty} 件</div>
-            </div>
-            <button type="button" class="remove-btn" onclick="removeGadgetFromList(${g.id})">🗑️ 移除</button>
-        </div>
-    `).join('');
-    
-    const listDiv = document.getElementById('gadgets-list');
-    listDiv.innerHTML = listHtml;
-    
-    GADGETS.forEach(g => {
-        const selected = selectedGadgets.find(sg => sg.id === g.id);
-        const qtyLabel = document.getElementById(`qty-${g.id}`);
-        if (selected) {
-            qtyLabel.textContent = `✅ x${selected.qty}`;
-        } else {
-            qtyLabel.textContent = '';
-        }
-    });
-    
-    document.getElementById('selected-list').style.display = selectedGadgets.length > 0 ? 'block' : 'none';
-}
-
-function removeGadgetFromList(id) {
-    selectedGadgets = selectedGadgets.filter(g => g.id !== id);
-    updateGadgetsList();
-}
-
-function handleLogin() {
-    const name = document.getElementById('user-name').value.trim();
-    const role = document.getElementById('user-role').value;
-    const pass = document.getElementById('admin-pass').value;
-    
-    if (!name) { alert('❌ 請輸入名字'); return; }
-    if (!role) { alert('❌ 請選擇身份'); return; }
-    if (role === 'admin' && pass !== ADMIN_PASSWORD) { alert('❌ 密碼錯誤'); return; }
-    
-    currentUser = { name, role };
-    document.getElementById('login-screen').style.display = 'none';
-    
-    if (role === 'staff') {
-        document.getElementById('staff-screen').style.display = 'block';
-        document.getElementById('staff-name').textContent = `同事: ${name}`;
-        document.getElementById('staff-date').textContent = `日期: ${new Date().toLocaleDateString('zh-HK')}`;
-        initializeGadgets();
-    } else {
-        document.getElementById('admin-screen').style.display = 'block';
-        refreshAdminView();
-    }
-}
-
-function logout() {
-    currentUser = null;
-    currentGadget = null;
-    selectedGadgets = [];
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('staff-screen').style.display = 'none';
-    document.getElementById('admin-screen').style.display = 'none';
-    document.getElementById('user-name').value = '';
-    document.getElementById('user-role').value = '';
-    document.getElementById('admin-pass').value = '';
-}
-
-function submitStaffReport(e) {
-    e.preventDefault();
-    
-    const leader = document.getElementById('leader').value;
-    if (!leader) { alert('❌ 請選擇 Leader'); return; }
-    
-    const cis = parseInt(document.getElementById('cis').value) || 0;
-    const vas = parseInt(document.getElementById('vas').value) || 0;
-    const adhoc1 = parseInt(document.getElementById('adhoc1').value) || 0;
-    const adhoc2 = parseInt(document.getElementById('adhoc2').value) || 0;
-    const adhoc3 = parseInt(document.getElementById('adhoc3').value) || 0;
-    const notes = document.getElementById('notes').value;
-    
-    const gadgetsList = selectedGadgets.length > 0 
-        ? selectedGadgets.map(g => `${g.brand} ${g.model} (x${g.qty})`).join(' | ')
-        : '無';
-    
-    const now = new Date();
-    const report = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().split(' ')[0],
-        staff: currentUser.name,
-        leader,
-        cis, vas, adhoc1, adhoc2, adhoc3,
-        gadgets: gadgetsList,
-        notes
-    };
-    
-    reports.push(report);
-    localStorage.setItem('sales_reports', JSON.stringify(reports));
-    
-    // 自動同步到 Google Sheets
-    syncReportToGoogle(report);
-    
-    document.getElementById('success-msg').classList.add('show');
-    setTimeout(() => document.getElementById('success-msg').classList.remove('show'), 3000);
-    
-    e.target.reset();
-    document.getElementById('gadget-detail').classList.remove('active');
-    document.getElementById('selected-list').style.display = 'none';
-    selectedGadgets = [];
-    initializeGadgets();
-    currentGadget = null;
-}
-
-// 單筆同步到 Google Sheets
-function syncReportToGoogle(report) {
-    const values = [[
-        report.date,
-        report.time,
-        report.staff,
-        report.leader,
-        report.cis,
-        report.vas,
-        report.adhoc1,
-        report.adhoc2,
-        report.adhoc3,
-        report.gadgets,
-        report.notes
-    ]];
-    
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/'Sheet1'!A:K:append?valueInputOption=USER_ENTERED&key=${GOOGLE_API_KEY}`;
-    
-    axios.post(url, { values })
-        .then(() => {
-            console.log('✅ 已同步到 Google Sheets');
-        })
-        .catch(err => {
-            console.log('⚠️ Google Sheets 同步失敗:', err.response?.data || err.message);
-        });
-}
-
-// 全部同步到 Google Sheets
-function syncToGoogleSheets() {
-    if (!GOOGLE_SHEET_ID || !GOOGLE_API_KEY) {
-        alert('❌ Google Sheets 設定未完成');
-        return;
-    }
-    
-    if (reports.length === 0) { 
-        alert('❌ 沒有數據'); 
-        return; 
-    }
-    
-    document.getElementById('sync-status').textContent = '⏳ 正在同步...';
-    
-    const values = reports.map(r => [
-        r.date,
-        r.time || '',
-        r.staff,
-        r.leader || '',
-        r.cis,
-        r.vas,
-        r.adhoc1,
-        r.adhoc2,
-        r.adhoc3,
-        r.gadgets,
-        r.notes
-    ]);
-    
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/'Sheet1'!A:K:append?valueInputOption=USER_ENTERED&key=${GOOGLE_API_KEY}`;
-    
-    axios.post(url, { values })
-        .then((response) => {
-            document.getElementById('sync-status').textContent = '✅ 已同步到 Google Sheets';
-            setTimeout(() => document.getElementById('sync-status').textContent = '', 3000);
-            alert('✅ 已同步 ' + reports.length + ' 筆數據到 Google Sheets\n\n💾 數據同時已保存在本地 LocalStorage');
-        })
-        .catch(err => {
-            document.getElementById('sync-status').textContent = '❌ 同步失敗';
-            setTimeout(() => document.getElementById('sync-status').textContent = '', 3000);
-            console.error('Google Sheets 同步錯誤:', err.response?.data || err.message);
-            alert('❌ 同步失敗: ' + (err.response?.data?.error?.message || err.message));
-        });
-}
-
-function refreshAdminView() {
-    const today = new Date().toISOString().split('T')[0];
-    const todayData = reports.filter(r => r.date === today);
-    
-    let cis = 0, vas = 0, adhoc = 0;
-    todayData.forEach(r => { cis += r.cis; vas += r.vas; adhoc += r.adhoc1 + r.adhoc2 + r.adhoc3; });
-    
-    document.getElementById('stats-grid').innerHTML = `
-        <div class="stat-box"><div>📱 今日 CIS</div><div class="stat-value">${cis}</div></div>
-        <div class="stat-box"><div>➕ 今日 VAS</div><div class="stat-value" style="color: #10b981;">${vas}</div></div>
-        <div class="stat-box"><div>🎁 Ad-Hoc VAS</div><div class="stat-value" style="color: #ef4444;">${adhoc}</div></div>
-        <div class="stat-box"><div>📊 報數次數</div><div class="stat-value" style="color: #8b5cf6;">${todayData.length}</div></div>
-    `;
-    
-    const tbody = document.getElementById('table-body');
-    tbody.innerHTML = '';
-    
-    if (reports.length === 0) {
-        document.getElementById('no-data-msg').style.display = 'block';
-        return;
-    }
-    
-    document.getElementById('no-data-msg').style.display = 'none';
-    reports.slice().reverse().forEach(r => {
-        tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.staff}</td><td>${r.leader || '-'}</td><td>${r.cis}</td><td>${r.vas}</td><td>${r.adhoc1}</td><td>${r.adhoc2}</td><td>${r.adhoc3}</td><td>${r.gadgets}</td><td>${r.notes}</td></tr>`;
-    });
-}
-
-function exportToCSV() {
-    if (reports.length === 0) { alert('❌ 沒有數據'); return; }
-    
-    let csv = '日期,時間,同事,Leader,CIS,VAS,2500M,Router,PCD NEW,禮品銷售,備註\n';
-    reports.forEach(r => {
-        csv += `${r.date},${r.time || ''},${r.staff},${r.leader || ''},${r.cis},${r.vas},${r.adhoc1},${r.adhoc2},${r.adhoc3},"${r.gadgets}","${r.notes}"\n`;
-    });
-    
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv; charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-}
-
-initializeGadgets();
-</script>
-
 </body>
 </html>
